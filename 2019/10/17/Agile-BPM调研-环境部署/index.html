@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/g.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/g.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/g.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="环境搭建MysqlAlileBPM要求Mysql版本在5.6以上，此处我安装的5.7，安装配置方法在上一篇文章里。 JDK8安装JDK8，并配置环境变量。 环境变量的配置方法： 打开一下目录和标签1计算机----属性----高级系统设置---高级----环境变量 在系统变量中，点击新建按钮，输入JDK的安装根目录，命名为JAVA_HOME  点击Path—编辑，新建一条记录，目录为JDK安装目录的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Agile-BPM调研-环境部署">
+<meta property="og:url" content="http://yoursite.com/2019/10/17/Agile-BPM调研-环境部署/index.html">
+<meta property="og:site_name" content="燕师傅">
+<meta property="og:description" content="环境搭建MysqlAlileBPM要求Mysql版本在5.6以上，此处我安装的5.7，安装配置方法在上一篇文章里。 JDK8安装JDK8，并配置环境变量。 环境变量的配置方法： 打开一下目录和标签1计算机----属性----高级系统设置---高级----环境变量 在系统变量中，点击新建按钮，输入JDK的安装根目录，命名为JAVA_HOME  点击Path—编辑，新建一条记录，目录为JDK安装目录的">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-70.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-71.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-72.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-74.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-75.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-76.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-77.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-78.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-79.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-80.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-82.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-83.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-84.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-85.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-91.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-87.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-88.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-89.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-90.png">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-86.png">
+<meta property="og:updated_time" content="2020-10-22T03:35:39.041Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Agile-BPM调研-环境部署">
+<meta name="twitter:description" content="环境搭建MysqlAlileBPM要求Mysql版本在5.6以上，此处我安装的5.7，安装配置方法在上一篇文章里。 JDK8安装JDK8，并配置环境变量。 环境变量的配置方法： 打开一下目录和标签1计算机----属性----高级系统设置---高级----环境变量 在系统变量中，点击新建按钮，输入JDK的安装根目录，命名为JAVA_HOME  点击Path—编辑，新建一条记录，目录为JDK安装目录的">
+<meta name="twitter:image" content="http://yoursite.com/images/pasted-sam-70.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/17/Agile-BPM调研-环境部署/">
+
+
+
+
+
+  <title>Agile-BPM调研-环境部署 | 燕师傅</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">燕师傅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/17/Agile-BPM调研-环境部署/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sam">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="燕师傅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Agile-BPM调研-环境部署</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T17:29:42+08:00">
+                2019-10-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+    
+    
+
+   
+
+    
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h4><h5 id="Mysql"><a href="#Mysql" class="headerlink" title="Mysql"></a>Mysql</h5><p>AlileBPM要求Mysql版本在5.6以上，此处我安装的5.7，安装配置方法在上一篇文章里。</p>
+<h5 id="JDK8"><a href="#JDK8" class="headerlink" title="JDK8"></a>JDK8</h5><p>安装JDK8，并配置环境变量。</p>
+<p>环境变量的配置方法：</p>
+<p>打开一下目录和标签<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">计算机----属性----高级系统设置---高级----环境变量</span><br></pre></td></tr></table></figure></p>
+<p>在系统变量中，点击新建按钮，输入JDK的安装根目录，命名为JAVA_HOME</p>
+<p><img src="\images\pasted-sam-70.png" alt="upload successful"></p>
+<p>点击Path—编辑，新建一条记录，目录为JDK安装目录的Bin目录（在WIN7或早期windows版本中，Path编辑页面并不是一个列表，需要手动添加分号写在字符串的最后面）</p>
+<p><img src="\images\pasted-sam-71.png" alt="upload successful"></p>
+<h5 id="eclipse与Server（tomcat）"><a href="#eclipse与Server（tomcat）" class="headerlink" title="eclipse与Server（tomcat）"></a>eclipse与Server（tomcat）</h5><h6 id="eclipse"><a href="#eclipse" class="headerlink" title="eclipse"></a>eclipse</h6><p>官网下载eclipse，选择develop for java，安装。</p>
+<p>打开eclipse，配置工作空间</p>
+<p><img src="\images\pasted-sam-72.png" alt="upload successful"></p>
+<p>点击launch，至此，eclipse安装完成。</p>
+<h6 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h6><p>打开eclipse，点击菜单栏Help–Install New Software…，打开插件安装界面。<br>在插件安装界面点击Add，Name中任意输入源名称，Location中输入源地址，点击Add按钮。<br>此处我使用的location中，201909代表eclipse的版本号，可在Help–About中查看<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://download.eclipse.org/releases/2019-09</span><br></pre></td></tr></table></figure></p>
+<p><img src="\images\pasted-sam-74.png" alt="upload successful"></p>
+<p>然后在加载出来的列表中，选择Web,XML, Java EE and OSGi Enterprise Development，然后选择下一步，然后一路Next并接受，然后eclipse右下角会有安装进度，等待安装完成，可能需要很久。</p>
+<p><img src="\images\pasted-sam-75.png" alt="upload successful"></p>
+<p><img src="\images\pasted-sam-76.png" alt="upload successful"></p>
+<p>安装完成后，重启eclipse，菜单栏点击window–preferences打开选项页面，在左侧菜单中有Server选项，即安装成功。</p>
+<p><img src="\images\pasted-sam-77.png" alt="upload successful"></p>
+<h6 id="Tomcat"><a href="#Tomcat" class="headerlink" title="Tomcat"></a>Tomcat</h6><p>按顺序点击如下菜单（选项），打开运行环境配置界面<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Window--Preferences---Server---Runtime Environments</span><br></pre></td></tr></table></figure></p>
+<p>点击Add，选择Apache目录下的Apache Tomcat v7.0，并点击Next</p>
+<p><img src="\images\pasted-sam-78.png" alt="upload successful"></p>
+<p>在下一步的目录中，选择download and install（如果已安装，直接选择路径）</p>
+<p><img src="\images\pasted-sam-79.png" alt="upload successful"></p>
+<p>然后选择一个安装目录，等待下载完成后点击Finish</p>
+<p><img src="\images\pasted-sam-80.png" alt="upload successful"></p>
+<p>至此，基本环境已搭建完成</p>
+<h4 id="部署AligeBPM源码"><a href="#部署AligeBPM源码" class="headerlink" title="部署AligeBPM源码"></a>部署AligeBPM源码</h4><h5 id="项目篇"><a href="#项目篇" class="headerlink" title="项目篇"></a>项目篇</h5><h6 id="Clone项目"><a href="#Clone项目" class="headerlink" title="Clone项目"></a>Clone项目</h6><p>打开eclipse，点击右侧的git按钮（如果没有就在Quick Access文本框中输入git，然后选择Git-Perspective…），然后在git页面点击clone按钮，然后输入AgileBPM的git地址，点击Next</p>
+<p><img src="\images\pasted-sam-82.png" alt="upload successful"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://gitee.com/agile-bpm/agile-bpm-basic.git</span><br></pre></td></tr></table></figure>
+<p>然后右下角会有Cloning的进度，等待clone完成。</p>
+<h6 id="导入项目"><a href="#导入项目" class="headerlink" title="导入项目"></a>导入项目</h6><p>在git界面刚克隆好的项目上，右键选择Import Project，然后打开导入界面，选择Finish。</p>
+<p><img src="\images\pasted-sam-83.png" alt="upload successful"></p>
+<p>同样，右下角会有导入进度，等待导入完成。</p>
+<h6 id="Update-Project"><a href="#Update-Project" class="headerlink" title="Update Project"></a>Update Project</h6><p>点击右侧的Java按钮，打开Project Explorer界面，我们可以看到已导入的项目，然后右键点击项目，选择Maven–Update Project，打开更新项目界面，然后选择完成。</p>
+<p><img src="\images\pasted-sam-84.png" alt="upload successful"></p>
+<p>然后静待右下角更新进度完成。</p>
+<h5 id="数据库篇"><a href="#数据库篇" class="headerlink" title="数据库篇"></a>数据库篇</h5><h6 id="建立数据库"><a href="#建立数据库" class="headerlink" title="建立数据库"></a>建立数据库</h6><p>打开Mysql的管理器，这里我用的是Navicat，连接Mysql，然后新建数据库。这里我建立的名字叫testbpm.</p>
+<p>右击建立好的数据库，选择运行SQL文件，然后找到git下载的项目目录的doc–mysql，按顺序执行create文件夹和datainit文件夹下的1-7个sql，进行创建表和初始化数据。</p>
+<p><img src="\images\pasted-sam-85.png" alt="upload successful"></p>
+<h6 id="配置数据库"><a href="#配置数据库" class="headerlink" title="配置数据库"></a>配置数据库</h6><p>在eclipse的项目中，选择<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web---java resources---src/main/resources---properties---app-dev.properties</span><br></pre></td></tr></table></figure></p>
+<p>打开配置文件，配置Mysql的Driver，地址，库，用户名，密码。注意Driver按图中配置</p>
+<p><img src="\images\pasted-sam-91.png" alt="upload successful"></p>
+<p>保存。</p>
+<h5 id="Server篇"><a href="#Server篇" class="headerlink" title="Server篇"></a>Server篇</h5><h6 id="配置Server"><a href="#配置Server" class="headerlink" title="配置Server"></a>配置Server</h6><p>在Quick Access文本框中输入Server，选择View中的Servers</p>
+<p><img src="\images\pasted-sam-87.png" alt="upload successful"></p>
+<p>将Server显示在工作区中。</p>
+<p>在Server工作区中点击新建Server，选择Apache的Tomcat7.0，然后选择Finish</p>
+<p><img src="\images\pasted-sam-88.png" alt="upload successful"></p>
+<p>此时工作区中已出现Tomcat服务器。</p>
+<p>右键Tomcat服务器，选择Add and Remove，打开管理界面。然后选择左侧的web，添加到右侧，选择Finish。</p>
+<p><img src="\images\pasted-sam-89.png" alt="upload successful"></p>
+<p>双击Tomcat服务器，选择Modules，点击Add External Web Module，添加外部模板，然后选择项目下的bpm-explorer文件夹，并将path写为/bpm-explorer，点击OK添加，如下图所示：</p>
+<p><img src="\images\pasted-sam-90.png" alt="upload successful"></p>
+<p>至此，Server配置完成。</p>
+<h6 id="启动项目"><a href="#启动项目" class="headerlink" title="启动项目"></a>启动项目</h6><p>在Server区，右键Tomcat服务器，点击Start，然后静待Tomcat启动，直到启动完成，在浏览器输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:8080/bpm-explorer</span><br></pre></td></tr></table></figure></p>
+<p>即可成功访问项目。</p>
+<p>需要注意的是，如果因为8080端口被占用，那么需要关闭原8080端口，或者在Tomcat安装目录的conf文件夹下，server.xml中的connector属性中，更改tomcat的端口即可。</p>
+<p><img src="\images\pasted-sam-86.png" alt="upload successful"></p>
+<h4 id="仅从Tomcat部署生产环境"><a href="#仅从Tomcat部署生产环境" class="headerlink" title="仅从Tomcat部署生产环境"></a>仅从Tomcat部署生产环境</h4><p>如果仅需要从生产环境部署，而不需要开发环境，那么按照以下步骤操作。</p>
+<h5 id="安装JDK"><a href="#安装JDK" class="headerlink" title="安装JDK"></a>安装JDK</h5><p>安装JDK并设置环境变量</p>
+<h5 id="安装Tomcat"><a href="#安装Tomcat" class="headerlink" title="安装Tomcat"></a>安装Tomcat</h5><p>下载Tomcat并解压</p>
+<p>在系统高级设置中新建变量，名称为CATALINA_HOME，路径为解压根目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CATALINA_HOME=D:\PortableDevelop\Tomcat</span><br></pre></td></tr></table></figure></p>
+<p>对Path变量进行编辑，新建以下路径<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">%CATALINA_HOME%\lib</span><br><span class="line">%CATALINA_HOME%\lib\servlet-api.jar</span><br><span class="line">%CATALINA_HOME%\lib\jsp-api.jar</span><br></pre></td></tr></table></figure></p>
+<h5 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h5><h6 id="打包"><a href="#打包" class="headerlink" title="打包"></a>打包</h6><p>在开发环境中，右键web项目–Run as– maven build…，在Goals输入Package，然后点击run。</p>
+<h6 id="复制文件到tomcat"><a href="#复制文件到tomcat" class="headerlink" title="复制文件到tomcat"></a>复制文件到tomcat</h6><p>在web文件夹下的target中，找到agile-bpm-platform.war文件，将此文件复制到Tomcat的webapps文件夹下；</p>
+<p>将项目中的bpm-explorer(前端文件夹)也复制到webapps文件夹下；</p>
+<h6 id="启动tomcat"><a href="#启动tomcat" class="headerlink" title="启动tomcat"></a>启动tomcat</h6><p>在tomcat解压目录的bin文件夹下，执行startup.bat即可启动tomcat。</p>
+<p>tomcat启动时，如果发现war包，会自动解压到同名目录，如果存在同名目录，将不会解压。所以我们将agile-bpm-platform.war复制到webapps中，首次启动tomcat时，会自动解压，请耐心等待。</p>
+<h6 id="修改数据库配置"><a href="#修改数据库配置" class="headerlink" title="修改数据库配置"></a>修改数据库配置</h6><p>tomcat启动解压后，会在webapps中产生agile-bpm-platform目录，如果需要修改数据配置，打开以下文件，修改配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">agile-bpm-platform\WEB-INF\classes\properties\app-dev.properties</span><br></pre></td></tr></table></figure></p>
+<p>修改后重启tomcat即可。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/17/Mysql-zip版安装配置方法/" rel="next" title="Mysql zip版安装配置方法">
+                <i class="fa fa-chevron-left"></i> Mysql zip版安装配置方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/17/Agile-BPM调研-项目试用/" rel="prev" title="Agile-BPM调研-项目试用">
+                Agile-BPM调研-项目试用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Sam</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">67</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#环境搭建"><span class="nav-number">1.</span> <span class="nav-text">环境搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Mysql"><span class="nav-number">1.1.</span> <span class="nav-text">Mysql</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#JDK8"><span class="nav-number">1.2.</span> <span class="nav-text">JDK8</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#eclipse与Server（tomcat）"><span class="nav-number">1.3.</span> <span class="nav-text">eclipse与Server（tomcat）</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#eclipse"><span class="nav-number">1.3.1.</span> <span class="nav-text">eclipse</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#Server"><span class="nav-number">1.3.2.</span> <span class="nav-text">Server</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#Tomcat"><span class="nav-number">1.3.3.</span> <span class="nav-text">Tomcat</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#部署AligeBPM源码"><span class="nav-number">2.</span> <span class="nav-text">部署AligeBPM源码</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#项目篇"><span class="nav-number">2.1.</span> <span class="nav-text">项目篇</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#Clone项目"><span class="nav-number">2.1.1.</span> <span class="nav-text">Clone项目</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#导入项目"><span class="nav-number">2.1.2.</span> <span class="nav-text">导入项目</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#Update-Project"><span class="nav-number">2.1.3.</span> <span class="nav-text">Update Project</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数据库篇"><span class="nav-number">2.2.</span> <span class="nav-text">数据库篇</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#建立数据库"><span class="nav-number">2.2.1.</span> <span class="nav-text">建立数据库</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#配置数据库"><span class="nav-number">2.2.2.</span> <span class="nav-text">配置数据库</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Server篇"><span class="nav-number">2.3.</span> <span class="nav-text">Server篇</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#配置Server"><span class="nav-number">2.3.1.</span> <span class="nav-text">配置Server</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#启动项目"><span class="nav-number">2.3.2.</span> <span class="nav-text">启动项目</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#仅从Tomcat部署生产环境"><span class="nav-number">3.</span> <span class="nav-text">仅从Tomcat部署生产环境</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#安装JDK"><span class="nav-number">3.1.</span> <span class="nav-text">安装JDK</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#安装Tomcat"><span class="nav-number">3.2.</span> <span class="nav-text">安装Tomcat</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#部署"><span class="nav-number">3.3.</span> <span class="nav-text">部署</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#打包"><span class="nav-number">3.3.1.</span> <span class="nav-text">打包</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#复制文件到tomcat"><span class="nav-number">3.3.2.</span> <span class="nav-text">复制文件到tomcat</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#启动tomcat"><span class="nav-number">3.3.3.</span> <span class="nav-text">启动tomcat</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#修改数据库配置"><span class="nav-number">3.3.4.</span> <span class="nav-text">修改数据库配置</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sam</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
