@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/g.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/g.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/g.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="随着.Net Core平台越来越成熟，特别是.Net 5开始要大一统，传统的.Net Framework渐渐要退出舞台，那么今天闲来无事，跟各位分享一下，从项目的构建开始写一个.Net Core的WebAPI Demo，尽量使用DDD思想和Restful。 第一部分，构建项目在此之前，要安装最新版VS2019(16.9)，并安装.Net Core SDK  3.1或者.Net 5都可以。  新建一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从零开始Demo一个.Net Core WebAPI">
+<meta property="og:url" content="http://yoursite.com/2021/05/01/从零开始Demo一个-Net-Core-WebAPI/index.html">
+<meta property="og:site_name" content="燕师傅">
+<meta property="og:description" content="随着.Net Core平台越来越成熟，特别是.Net 5开始要大一统，传统的.Net Framework渐渐要退出舞台，那么今天闲来无事，跟各位分享一下，从项目的构建开始写一个.Net Core的WebAPI Demo，尽量使用DDD思想和Restful。 第一部分，构建项目在此之前，要安装最新版VS2019(16.9)，并安装.Net Core SDK  3.1或者.Net 5都可以。  新建一">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2021-05-03T02:25:54.593Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="从零开始Demo一个.Net Core WebAPI">
+<meta name="twitter:description" content="随着.Net Core平台越来越成熟，特别是.Net 5开始要大一统，传统的.Net Framework渐渐要退出舞台，那么今天闲来无事，跟各位分享一下，从项目的构建开始写一个.Net Core的WebAPI Demo，尽量使用DDD思想和Restful。 第一部分，构建项目在此之前，要安装最新版VS2019(16.9)，并安装.Net Core SDK  3.1或者.Net 5都可以。  新建一">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/05/01/从零开始Demo一个-Net-Core-WebAPI/">
+
+
+
+
+
+  <title>从零开始Demo一个.Net Core WebAPI | 燕师傅</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">燕师傅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/01/从零开始Demo一个-Net-Core-WebAPI/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sam">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="燕师傅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">从零开始Demo一个.Net Core WebAPI</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-05-01T18:19:50+08:00">
+                2021-05-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+    
+    
+
+   
+
+    
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>随着.Net Core平台越来越成熟，特别是.Net 5开始要大一统，传统的.Net Framework渐渐要退出舞台，那么今天闲来无事，跟各位分享一下，从项目的构建开始写一个.Net Core的WebAPI Demo，尽量使用DDD思想和Restful。</p>
+<h3 id="第一部分，构建项目"><a href="#第一部分，构建项目" class="headerlink" title="第一部分，构建项目"></a>第一部分，构建项目</h3><p>在此之前，要安装最新版VS2019(16.9)，并安装.Net Core SDK  3.1或者.Net 5都可以。</p>
+<ul>
+<li>新建一个项目，选择模板为<code>Asp.NetCore.WebAPI</code>，去掉HTTS，启用OpenAPI(默认会加上swagger相关支持)。起名为<code>Sam.NetCore.Demo.Hosting</code>。</li>
+<li><p>干掉Hosting自带的Controller下的类和模型类</p>
+</li>
+<li><p>新建项目.Net Core类库，起名<code>Sam.NetCore.Demo.Domain</code>，用于存放Entity实体和Repository抽象</p>
+</li>
+<li>新建项目.Net Core类库，起名<code>Sam.NetCore.Demo.DTO</code>,用于存放DTO相关类</li>
+<li>新建项目.Net Core类库，起名<code>Sam.NetCore.Demo.Application</code>,用于Service相关</li>
+<li>新建项目.Net Core类库，起名<code>Sam.NetCore.Demo.EntityFrameworkCore</code>,用于EFCore的处理和Repository实现</li>
+<li>新建项目.Net Core类库，起名<code>Sam.NetCore.Demo.EntityFrameworkCore.DBMigration</code>,用于迁移数据库，当然也可以不建此层，迁移也在EntityFrameworkCore中操作。</li>
+<li>新建项目.Net Core类库，起名<code>Sam.NetCore.Demo.Constant</code>,用于存放常量和枚举</li>
+<li>新建项目.Net Core类库，起名<code>Sam.NetCore.Demo.Utilities</code>，用于存放公共方法和扩展</li>
+</ul>
+<p>项目依赖关系如下</p>
+<ul>
+<li>Hosting层依赖Application，Constant，DTO，EntityFrameworkCore</li>
+<li>Application层依赖Contanst，Domain，DTO,EntityFrameworkCore,Utilities</li>
+<li>Constant层先不添加项目依赖</li>
+<li>Domain层先不添加项目依赖（后面有需要可以依赖Contanst）</li>
+<li>DTO层先不添加项目依赖</li>
+<li>EntityFrameworkCore层依赖Constant，Domain,Utilities</li>
+<li>EntityFrameworkCore.DBMigration依赖EntityFrameworkCore</li>
+<li>Utilities层先不添加依赖<br>打开Hosting层的properties的launchSetting.json，修改一下，默认以控制台方式启动<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;profiles&quot;: &#123;</span><br><span class="line">    &quot;Sam.NetCore.Demo.Hosting&quot;: &#123;</span><br><span class="line">      &quot;commandName&quot;: &quot;Project&quot;,</span><br><span class="line">      &quot;dotnetRunMessages&quot;: &quot;true&quot;,</span><br><span class="line">      &quot;launchBrowser&quot;: true,</span><br><span class="line">      &quot;launchUrl&quot;: &quot;swagger&quot;,</span><br><span class="line">      &quot;applicationUrl&quot;: &quot;http://localhost:5000&quot;,</span><br><span class="line">      &quot;environmentVariables&quot;: &#123;</span><br><span class="line">        &quot;ASPNETCORE_ENVIRONMENT&quot;: &quot;Development&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>至此，基本项目结构就构建完成了</p>
+<h3 id="第二部分，跑起来看效果"><a href="#第二部分，跑起来看效果" class="headerlink" title="第二部分，跑起来看效果"></a>第二部分，跑起来看效果</h3><p>下面将建立一个简单的API实现过程，分几步</p>
+<h6 id="建立Servcie"><a href="#建立Servcie" class="headerlink" title="建立Servcie"></a>建立Servcie</h6><p>在Application层添加一个文件夹Test,在此文件夹下添加一个接口ITestDemoService<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">namespace Sam.NetCore.Demo.Application.Test</span><br><span class="line">&#123;</span><br><span class="line">    public interface ITestDemoService</span><br><span class="line">    &#123;</span><br><span class="line">        public string Test();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在Test文件夹下再建一个文件夹，起名Impl，我们放实现类。新建TestDemoService.cs<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">namespace Sam.NetCore.Demo.Application.Test.Impl</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    public class TestDemoService : ITestDemoService</span><br><span class="line">    &#123;</span><br><span class="line">        public string Test()</span><br><span class="line">        &#123;</span><br><span class="line">            return &quot;Hello World!&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h6 id="建立Controller"><a href="#建立Controller" class="headerlink" title="建立Controller"></a>建立Controller</h6><p>在Hosting层的Controller文件夹下，新建一个类,TestDemoContoller.cs，继承于ControllerBase<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">using Microsoft.AspNetCore.Mvc;</span><br><span class="line">using Sam.NetCore.Demo.Application.Test;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace Sam.NetCore.Demo.Hosting.Controllers</span><br><span class="line">&#123;</span><br><span class="line">    [ApiController]</span><br><span class="line">    [Route(&quot;HelloWorld&quot;)]</span><br><span class="line">    public class TestDemoContoller : ControllerBase</span><br><span class="line">    &#123;</span><br><span class="line">        private readonly ITestDemoService testService;</span><br><span class="line"></span><br><span class="line">        public TestDemoContoller(ITestDemoService _testService)</span><br><span class="line">        &#123;</span><br><span class="line">            testService = _testService;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        [HttpGet]</span><br><span class="line">        public string Get()</span><br><span class="line">        &#123;</span><br><span class="line">            return this.testService.Test();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>需要注意的是，类需要添加特性<code>[ApiController]</code>和<code>Route</code>，方法需要添加特性说明HttpAction</p>
+<h6 id="添加IOC注册"><a href="#添加IOC注册" class="headerlink" title="添加IOC注册"></a>添加IOC注册</h6><p>上面添加好后，需要告诉IOC容器，ITestDemoService的实现类是哪个，才能实现构造函数的依赖注入。</p>
+<p>在Hosting层的Startup.cs的ConfigureServices中<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">……</span><br><span class="line">services.AddScoped&lt;ITestDemoService, TestDemoService&gt;();</span><br><span class="line">……</span><br></pre></td></tr></table></figure></p>
+<p>好了，现在运行程序，可以看到swagger中有一个API，可以测试一下。</p>
+<h3 id="第三部分，添加数据库与EF的支持"><a href="#第三部分，添加数据库与EF的支持" class="headerlink" title="第三部分，添加数据库与EF的支持"></a>第三部分，添加数据库与EF的支持</h3><p>这部分我们添加一下对EF的支持<br>在EntityFrameworkCore层操作：</p>
+<h6 id="添加nuget依赖"><a href="#添加nuget依赖" class="headerlink" title="添加nuget依赖"></a>添加nuget依赖</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Microsoft.EntityFrameworkCore.SqlServer</span><br></pre></td></tr></table></figure>
+<p>这里用sqlserver数据库</p>
+<h6 id="添加DBContext"><a href="#添加DBContext" class="headerlink" title="添加DBContext"></a>添加DBContext</h6><p>添加一个类，起名DemoDBContext，继承自DBContext<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">using Microsoft.EntityFrameworkCore;</span><br><span class="line">using Sam.NetCore.Demo.Domain;</span><br><span class="line"></span><br><span class="line">namespace Sam.NetCore.Demo.EntityFrameworkCore</span><br><span class="line">&#123;</span><br><span class="line">    public class DemoDBContext : DbContext</span><br><span class="line">    &#123;</span><br><span class="line">        public DemoDBContext(DbContextOptions&lt;DemoDBContext&gt; options) : base(options)</span><br><span class="line">        &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)</span><br><span class="line">        &#123;</span><br><span class="line">            base.OnConfiguring(optionsBuilder);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里我们构造函数参数为options，传递给父类，之后在程序调用会通过Hosting的依赖注入方法注入options，在Migration类中我们会创建一个options。</p>
+<h6 id="添加一个实体"><a href="#添加一个实体" class="headerlink" title="添加一个实体"></a>添加一个实体</h6><p>在Domain层添加一个测试的实体TestEntity.cs<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">namespace Sam.NetCore.Demo.Domain</span><br><span class="line">&#123;</span><br><span class="line">    public class TestEntity</span><br><span class="line">    &#123;</span><br><span class="line">        public int ID &#123; get; set; &#125;</span><br><span class="line">        public string TestName &#123; get; set; &#125;</span><br><span class="line">        public string TestDes &#123; get; set; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个类没什么好说的，什么都没有  就是ID是命名约束，会被EF自动认为是主键</p>
+<h6 id="为此实体添加DBSet"><a href="#为此实体添加DBSet" class="headerlink" title="为此实体添加DBSet"></a>为此实体添加DBSet</h6><p>在EntityFrameworkCore层的DemoDBContext中，添加这个实体相关的DBSet<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">    public class DemoDBContext : DbContext</span><br><span class="line">    &#123;</span><br><span class="line">……</span><br><span class="line">        public DbSet&lt;TestEntity&gt; testEntities &#123; get; set; &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>到这里，一个基本的EF上下文和简单的实体就已经创建完成了。</p>
+<h6 id="迁移"><a href="#迁移" class="headerlink" title="迁移"></a>迁移</h6><p>下面让我们来用EF的迁移工具自动生成数据库。</p>
+<p>在EntityFrameworkCore.DBMigration层引用nuget<code>Microsoft.EntityFrameworkCore.Tools</code>，然后根目录新建一个appsettings.json，放入连接串，注意这个连接串是用来进行迁移的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;ConnectionStrings&quot;: &#123;</span><br><span class="line">    &quot;Default&quot;: &quot;server=.;database=NETCOREDEMO;integrated security=SSPI;User ID=IEMADMIN;Password=crtsoft&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后为了让迁移工具能够知道我们的连接串和所用数据库配置，建立一个DemoDBContextMigrationFactory类，继承自IDesignTimeDbContextFactory<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">namespace Sam.NetCore.Demo.EntityFrameworkCore.DBMigration</span><br><span class="line">&#123;</span><br><span class="line">    public class DemoDBContextMigrationFactory : IDesignTimeDbContextFactory&lt;DemoDBContext&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        public DemoDBContext CreateDbContext(string[] args)</span><br><span class="line">        &#123;</span><br><span class="line">            var configuration = BuildConfiguration();</span><br><span class="line"></span><br><span class="line">            var builder = new DbContextOptionsBuilder&lt;DemoDBContext&gt;().UseSqlServer(configuration[&quot;ConnectionStrings:Default&quot;],</span><br><span class="line">                b=&gt;b.MigrationsAssembly(&quot;Sam.NetCore.Demo.EntityFrameworkCore.DBMigration&quot;));</span><br><span class="line"></span><br><span class="line">            return new DemoDBContext(builder.Options);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        private static IConfigurationRoot BuildConfiguration()</span><br><span class="line">        &#123;</span><br><span class="line">            var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())</span><br><span class="line">                .AddJsonFile(&quot;appSettings.json&quot;, optional: true, reloadOnChange: true);</span><br><span class="line">            return builder.Build();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面是告诉EF迁移工具，需要操作的是DemoDBContext上下文。</p>
+<p>实现接口方法CreateDbContext，里面是创建具体上下文，包含用什么数据库，连接串是什么。</p>
+<p>这里有个坑，就是首先本层和DemoDBContext并不是一个命名空间，所以需要UserSqlserver时指定一下迁移命名空间，也就是这里<code>b=&gt;b.MigrationsAssembly(&quot;Sam.NetCore.Demo.EntityFrameworkCore.DBMigration&quot;)</code>，否则Add-Migration时就会报错<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Your target project &apos;Sam.NetCore.Demo.EntityFrameworkCore.Migration&apos; doesn&apos;t match your migrations assembly &apos;Sam.NetCore.Demo.EntityFrameworkCore&apos;. Either change your target project or change your migrations assembly.</span><br><span class="line">Change your migrations assembly by using DbContextOptionsBuilder. E.g. options.UseSqlServer(connection, b =&gt; b.MigrationsAssembly(&quot;Sam.NetCore.Demo.EntityFrameworkCore.Migration&quot;)). By default, the migrations assembly is the assembly containing the DbContext.</span><br><span class="line">Change your target project to the migrations project by using the Package Manager Console&apos;s Default project drop-down list, or by executing &quot;dotnet ef&quot; from the directory containing the migrations project.</span><br></pre></td></tr></table></figure></p>
+<p>其次一开始本层我命名为<code>Sam.NetCore.Demo.EntityFrameworkCore.Migration</code>，结果迁移时就出现问题了，因为迁移文件的基类是Migration，所以就产生了冲突，后改为<code>Sam.NetCore.Demo.EntityFrameworkCore.DBMigration</code>才解决问题。</p>
+<p>好了，下面我们可以开始迁移数据库和生成了。</p>
+<p>在程序包管理器(试图-其他程序-程序包管理器控制台)，选择默认项目为EntityFrameworkCore.DBMigration层，并且将本项目设置为启动项，输入以下迁移命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Add-Migration Init</span><br></pre></td></tr></table></figure></p>
+<p>Init是我们对本次迁移起的名，因为是第一次迁移，所以这里起名为Init</p>
+<p>然后执行以下命令，更新到数据库<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Update-Database</span><br></pre></td></tr></table></figure></p>
+<p>数据库已经生成好了。</p>
+<p>以后每次新建修改实体后，我们都可以执行这两个命令，生成最新的迁移文件，然后更新到数据库。小伙伴可能会疑惑现场部署不能这样吧，首先可以在程序里调用迁移，这样运行时自动就会迁移了，其次可以把相关函数提取出来写一个Migrator的exe文件，像IEM.Update一样，执行后更新数据库。</p>
+<h6 id="读取Hosting的AppSettings"><a href="#读取Hosting的AppSettings" class="headerlink" title="读取Hosting的AppSettings"></a>读取Hosting的AppSettings</h6><p>在讲Hosting配置DBContext之前，先简单说一下所有层读取Hosting的AppSettings方法。</p>
+<p>在Hosting的AppSettings中添加连接串<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&quot;ConnectionStrings&quot;: &#123;</span><br><span class="line">  &quot;Default&quot;: &quot;server=.;database=NETCOREDEMO;integrated security=SSPI;User ID=IEMADMIN;Password=crtsoft&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>注意，这个Hosting的AppSettings是供程序网站运行时调用的，而刚才我们在EntityFrameworkCore.DBMigration中添加那个AppSettings仅仅是为了数据库迁移时读取的，因为数据库迁移和运行没有卵关系，所以那里新建一个appSettings。下面继续说Hosting的AppSettings</p>
+<p>在Constant层（注意下面需要安装3个nuget包）中，新建一个文件夹，Configuration，我们在这里存放一些配置，在这个文件夹下新建一个类，叫AppSettings.Json<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">namespace Sam.NetCore.Demo.Constant.Configuration</span><br><span class="line">&#123;</span><br><span class="line">    public class AppSettings</span><br><span class="line">    &#123;</span><br><span class="line">        private static readonly IConfigurationRoot config;</span><br><span class="line"></span><br><span class="line">        static AppSettings()</span><br><span class="line">        &#123;</span><br><span class="line">            var buider = new ConfigurationBuilder().SetBasePath(System.IO.Directory.GetCurrentDirectory())</span><br><span class="line">                .AddJsonFile(&quot;appsettings.json&quot;, true, true);</span><br><span class="line">            config = buider.Build();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public struct ConnectionStrings</span><br><span class="line">        &#123;</span><br><span class="line">            public static string Default =&gt; config[&quot;ConnectionStrings:Default&quot;];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如上所示，我们建立一个静态构造函数，读取appsettings.json，然后以静态方式获取各配置。<br>需要注意的是，IConfigurationRoot需要安装nuget包<code>Microsoft.Extensions.Configuration</code>，SetBaseFile需要安装nuget包<code>Microsoft.Extensions.Configuration.FileExtensions</code>，AddJsonFile方法需要安装nuget包<code>Microsoft.Extensions.Configuration.Json</code>。至此我们就可以通过调用静态属性来直接获取配置啦。</p>
+<h6 id="Hosting中配置DBContext"><a href="#Hosting中配置DBContext" class="headerlink" title="Hosting中配置DBContext"></a>Hosting中配置DBContext</h6><p>在hosting层的startup中，ConfigureServices里，添加DbContext的配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">services.AddDbContext&lt;DemoDBContext&gt;(options =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    options.UseSqlServer(AppSettings.ConnectionStrings.Default);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>至此，基本的EFCore就完成了，下节我们通过EFCore，生成Repository，联合Service和Controller，生成第一个仿真的API。</p>
+<h3 id="第四部分，Repository联合Service，生成仿真API"><a href="#第四部分，Repository联合Service，生成仿真API" class="headerlink" title="第四部分，Repository联合Service，生成仿真API"></a>第四部分，Repository联合Service，生成仿真API</h3><h6 id="仓储"><a href="#仓储" class="headerlink" title="仓储"></a>仓储</h6><p>仓储（Repository）是DDD中的一个重要概念，下面我们在Domain层新建一个文件夹，叫IRepository，放置仓储类的接口。在此文件夹新建一个ITestRepository，放置我们上一部分创建好的TestEntity的仓储类。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">using System.Collections.Generic;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace Sam.NetCore.Demo.Domain.IRepository</span><br><span class="line">&#123;</span><br><span class="line">    public interface ITestRepository</span><br><span class="line">    &#123;</span><br><span class="line">       IEnumerable&lt; TestEntity&gt; Get();</span><br><span class="line"></span><br><span class="line">        TestEntity Get(int ID);</span><br><span class="line"></span><br><span class="line">        void Insert(TestEntity entity);</span><br><span class="line"></span><br><span class="line">        void Update(int ID, TestEntity entity);</span><br><span class="line"></span><br><span class="line">        void Delete(TestEntity entity);</span><br><span class="line"></span><br><span class="line">        void SaveChanges();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>定义了几个基本的接口，增删改查，保存修改。</p>
+<p>在EntityFrameworkCore层中，新建一个Repository文件夹，我们将实现类放在这里。<br>在此文件夹中新建一个类TestRepository，实现上面那个接口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">namespace Sam.NetCore.Demo.EntityFrameworkCore.Repository</span><br><span class="line">&#123;</span><br><span class="line">    public class TestRepository : Domain.IRepository.ITestRepository</span><br><span class="line">    &#123;</span><br><span class="line">        private readonly DemoDBContext context;</span><br><span class="line"></span><br><span class="line">        public TestRepository(DemoDBContext _context)</span><br><span class="line">        &#123;</span><br><span class="line">            context = _context;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public void Delete(TestEntity entity)</span><br><span class="line">        &#123;</span><br><span class="line">            this.context.testEntities.Remove(entity);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        public TestEntity Get(int ID)</span><br><span class="line">        &#123;</span><br><span class="line">            return this.context.testEntities.Find(new object[] &#123; ID &#125;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public IEnumerable&lt;TestEntity&gt; Get()</span><br><span class="line">        &#123;</span><br><span class="line">            return this.context.testEntities.ToList();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public void Insert(TestEntity entity)</span><br><span class="line">        &#123;</span><br><span class="line">            this.context.testEntities.Add(entity);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public void Update(int ID, TestEntity entity)</span><br><span class="line">        &#123;</span><br><span class="line">            //什么也不用写</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public void SaveChanges()</span><br><span class="line">        &#123;</span><br><span class="line">            this.context.SaveChanges();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>好了，一个简单的仓库就建立好了。</p>
+<h6 id="DTO"><a href="#DTO" class="headerlink" title="DTO"></a>DTO</h6><p>下面我们建立DTO传输对象，在DTO层新建一个类，TestEntityDto，我们用这个类来传输TestEntity实体。当然，为了简单，这里暂时先用一模一样的名称。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">namespace Sam.NetCore.Demo.DTO</span><br><span class="line">&#123;</span><br><span class="line">    public class TestEntityDto</span><br><span class="line">    &#123;</span><br><span class="line">        public int ID &#123; get; set; &#125;</span><br><span class="line">        public string TestName &#123; get; set; &#125;</span><br><span class="line">        public string TestDes &#123; get; set; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>之后我们在给用户传输数据时，就用DTO，而不直接把数据库实体暴露给用户。</p>
+<h6 id="创建Service"><a href="#创建Service" class="headerlink" title="创建Service"></a>创建Service</h6><p>在Application层，我们创建一个处理TestEntity的Service，先创建一个接口ITestEntityService<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">namespace Sam.NetCore.Demo.Application.Test</span><br><span class="line">&#123;</span><br><span class="line">    public interface ITestEntityService</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">        IEnumerable&lt;TestEntityDto&gt; Get();</span><br><span class="line">        TestEntityDto Get(int ID);</span><br><span class="line">        void Insert(TestEntityDto dto);</span><br><span class="line">        void Update(int ID, TestEntityDto dto);</span><br><span class="line">        void Delete(int ID);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后在Impl文件夹下，实现此接口。创建一个类 TestEntityService<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">namespace Sam.NetCore.Demo.Application.Test.Impl</span><br><span class="line">&#123;</span><br><span class="line">    public class TestEntityService : ITestEntityService</span><br><span class="line">    &#123;</span><br><span class="line">        private readonly ITestRepository repository;</span><br><span class="line"></span><br><span class="line">        public TestEntityService(ITestRepository _repository)</span><br><span class="line">        &#123;</span><br><span class="line">            repository = _repository;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public void Delete(int ID)</span><br><span class="line">        &#123;</span><br><span class="line">            var entity = this.repository.Get(ID);</span><br><span class="line">            if (entity == null)</span><br><span class="line">            &#123;</span><br><span class="line">                throw new Exception(&quot;NOT FOUND&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">            this.repository.Delete(entity);</span><br><span class="line">            this.repository.SaveChanges();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public IEnumerable&lt;TestEntityDto&gt; Get()</span><br><span class="line">        &#123;</span><br><span class="line">            var entities = this.repository.Get();</span><br><span class="line">            List&lt;TestEntityDto&gt; dtos = new List&lt;TestEntityDto&gt;();</span><br><span class="line">            foreach (var entity in entities)</span><br><span class="line">            &#123;</span><br><span class="line">                dtos.Add(new TestEntityDto</span><br><span class="line">                &#123;</span><br><span class="line">                    ID = entity.ID,</span><br><span class="line">                    TestName = entity.TestName,</span><br><span class="line">                    TestDes = entity.TestDes</span><br><span class="line">                &#125;);</span><br><span class="line">            &#125;</span><br><span class="line">            return dtos;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public TestEntityDto Get(int ID)</span><br><span class="line">        &#123;</span><br><span class="line">            var entity = this.repository.Get(ID);</span><br><span class="line"></span><br><span class="line">            return new TestEntityDto</span><br><span class="line">            &#123;</span><br><span class="line">                ID = entity.ID,</span><br><span class="line">                TestName = entity.TestName,</span><br><span class="line">                TestDes = entity.TestDes</span><br><span class="line">            &#125;;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public void Insert(TestEntityDto dto)</span><br><span class="line">        &#123;</span><br><span class="line">            var entity = new TestEntity</span><br><span class="line">            &#123;</span><br><span class="line">                TestName = dto.TestName,</span><br><span class="line">                TestDes = dto.TestDes</span><br><span class="line">            &#125;;</span><br><span class="line">            this.repository.Insert(entity);</span><br><span class="line">            this.repository.SaveChanges();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public void Update(int ID, TestEntityDto dto)</span><br><span class="line">        &#123;</span><br><span class="line">            throw new NotImplementedException();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>简单的实现了几个，其他的照葫芦画瓢吧。</p>
+<p>至此一个Service也创建好了，那么下一步就让我们创建Controller吧。</p>
+<h6 id="Controller"><a href="#Controller" class="headerlink" title="Controller"></a>Controller</h6><p>在Hosting层的controller文件夹下，创建一个TestEntityController类，跟之前一样，继承自ControllerBase，并写几个HTTP方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">namespace Sam.NetCore.Demo.Hosting.Controllers</span><br><span class="line">&#123;</span><br><span class="line">    [ApiController]</span><br><span class="line">    [Route(&quot;testentity&quot;)]</span><br><span class="line">    public class TestEntityController : ControllerBase</span><br><span class="line">    &#123;</span><br><span class="line">        private readonly ITestEntityService service;</span><br><span class="line"></span><br><span class="line">        public TestEntityController(ITestEntityService _service)</span><br><span class="line">        &#123;</span><br><span class="line">            service = _service;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        [HttpGet]</span><br><span class="line">        [Route(&quot;&#123;id&#125;&quot;)]</span><br><span class="line">        public ActionResult&lt;TestEntityDto&gt; Get(int id)</span><br><span class="line">        &#123;</span><br><span class="line">            var result = service.Get(id);</span><br><span class="line">            return Ok(result);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        [HttpGet]</span><br><span class="line">        public ActionResult&lt;IEnumerable&lt;TestEntityDto&gt;&gt; Get()</span><br><span class="line">        &#123;</span><br><span class="line">            var result = service.Get();</span><br><span class="line">            return Ok(result);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        [HttpPost]</span><br><span class="line">        public ActionResult Add(TestEntityDto dto)</span><br><span class="line">        &#123;</span><br><span class="line">            service.Insert(dto);</span><br><span class="line">            return Ok();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        [HttpDelete]</span><br><span class="line">        [Route(&quot;&#123;id&#125;&quot;)]</span><br><span class="line">        public ActionResult Delete(int id)</span><br><span class="line">        &#123;</span><br><span class="line">            service.Delete(id);</span><br><span class="line">            return Ok();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如上，通过构造函数注入servcie，然后调用各方法实现功能。</p>
+<p>至此，API都创建完成了。</p>
+<h6 id="配置依赖注入"><a href="#配置依赖注入" class="headerlink" title="配置依赖注入"></a>配置依赖注入</h6><p>别忘了在Hosting的startup中配置IOC，分别是仓储接口和servcie接口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">services.AddScoped&lt;ITestRepository, TestRepository&gt;();</span><br><span class="line">services.AddScoped&lt;ITestEntityService, TestEntityService&gt;();</span><br></pre></td></tr></table></figure></p>
+<p>至此，就完成了基本的一个API，让我们运行看看吧。  </p>
+<p>经过测试，可以完美的添加数据，查找数据，删除数据。</p>
+<p>在本部分中，每次传递DTO需要手动将entity转成dto，下一部分，我们将讲一下用automapper来做数据映射。</p>
+<h3 id="第五部分，AutoMapper数据映射"><a href="#第五部分，AutoMapper数据映射" class="headerlink" title="第五部分，AutoMapper数据映射"></a>第五部分，AutoMapper数据映射</h3><p>其实在.Net Framework时代做IEM.WebAPI时，我有映射需求时自己写了一个小型框架，映射类和类，Datarow和类的关系，当时我还给它起名叫RTM(Row Type Mapping)。像这种东西我比较喜欢自己实现的，因为可控任何细节，可以根据IEM的逻辑让性能最优化，用起来也更熟练。不过这里我们简单的用一下automapper。</p>
+<p>首先在Application层添加nuget依赖<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AutoMapper</span><br><span class="line">AutoMapper.Extensions.Microsoft.DependencyInjection</span><br></pre></td></tr></table></figure></p>
+<p><code>AutoMapper.Extensions.Microsoft.DependencyInjection</code>是IOC容器注册用的。</p>
+<p>在Application层，添加一个文件夹，叫<code>AutoMapperProfile</code>，我们在这里放关于automapper的对照配置，在此文件夹新建一个类，叫<code>AutoMapperConfigs</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">namespace Sam.NetCore.Demo.Application.AutoMapperProfile</span><br><span class="line">&#123;</span><br><span class="line">    public class AutoMapperConfigs : Profile</span><br><span class="line">    &#123;</span><br><span class="line">        public AutoMapperConfigs()</span><br><span class="line">        &#123;</span><br><span class="line">            CreateMap&lt;TestEntity, TestEntityDto&gt;();</span><br><span class="line">            CreateMap&lt;TestEntityDto, TestEntity&gt;();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在这里，我们简单的把TestEntity对照为TestEntityDto，把TestEntityDto对照为TestEntity，名称相同的会自动对照。当然我们可以用Formember来对每个属性进行自定义，这里就不试了。</p>
+<p>然后我们把之前TestEntityServcie构造函数注入IMapper<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class TestEntityService : ITestEntityService</span><br><span class="line">&#123;</span><br><span class="line">    private readonly ITestRepository repository;</span><br><span class="line">    private readonly IMapper mapper;</span><br><span class="line"></span><br><span class="line">    public TestEntityService(ITestRepository _repository, IMapper _mapper)</span><br><span class="line">    &#123;</span><br><span class="line">        repository = _repository;</span><br><span class="line">        mapper = _mapper;</span><br><span class="line">    &#125;</span><br><span class="line">    ……</span><br></pre></td></tr></table></figure></p>
+<p>把本Servcie之前写的手动对照全换为automapper自动的，例如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public IEnumerable&lt;TestEntityDto&gt; Get()</span><br><span class="line">&#123;</span><br><span class="line">    var entities = this.repository.Get();</span><br><span class="line"></span><br><span class="line">    //List&lt;TestEntityDto&gt; dtos = new List&lt;TestEntityDto&gt;();</span><br><span class="line">    //foreach (var entity in entities)</span><br><span class="line">    //&#123;</span><br><span class="line">    //    dtos.Add(new TestEntityDto</span><br><span class="line">    //    &#123;</span><br><span class="line">    //        ID = entity.ID,</span><br><span class="line">    //        TestName = entity.TestName,</span><br><span class="line">    //        TestDes = entity.TestDes</span><br><span class="line">    //    &#125;);</span><br><span class="line">    //&#125;</span><br><span class="line"></span><br><span class="line">    var dtos = this.mapper.Map&lt;IEnumerable&lt;TestEntityDto&gt;&gt;(entities);</span><br><span class="line"></span><br><span class="line">    return dtos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>z注释部分是之前写的，mapper.Map是新的。其他的函数一样。</p>
+<p>然后别忘了在Hosting的Startup中注册一下automapper<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">services.AddAutoMapper(typeof(AutoMapperConfigs));</span><br></pre></td></tr></table></figure></p>
+<p>至此，完成了automapper的简单使用。运行程序，我们可以看到，依然可以插入数据，删除数据和查询数据。</p>
+<h3 id="第六部分，自定义日志Log4Net"><a href="#第六部分，自定义日志Log4Net" class="headerlink" title="第六部分，自定义日志Log4Net"></a>第六部分，自定义日志Log4Net</h3><p>其实.Net core自带了一个简单的日志，默认可以在控制台输出日志，在创建的模板的controller我们可以看到其默认注入一个ILogger<t>的logger，现在我们自己用Log4Net完成扩展。</t></p>
+<h5 id="第一种方法是直接使用Log4Net的Ilog"><a href="#第一种方法是直接使用Log4Net的Ilog" class="headerlink" title="第一种方法是直接使用Log4Net的Ilog"></a>第一种方法是直接使用Log4Net的Ilog</h5><h6 id="配置log4net"><a href="#配置log4net" class="headerlink" title="配置log4net"></a>配置log4net</h6><p>  在Utilities层管理Nuget包，添加<code>log4net</code>，然后添加<code>Microsoft.Extensions.Hosting.Abstractions</code>，后者主要是我们扩展IHostBuilder时使用。<br>  添加Extensions文件夹，用来放扩展类。<br>  在Extensions文件夹下，建立Log4NetExtensions类，用来写log4net的扩展<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">  using log4net;</span><br><span class="line">using log4net.Config;</span><br><span class="line">using Microsoft.Extensions.Hosting;</span><br><span class="line">using System.IO;</span><br><span class="line">using System.Reflection;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace Sam.NetCore.Demo.Utilities.Extensions</span><br><span class="line">&#123;</span><br><span class="line">    public static class Log4NetExtensions</span><br><span class="line">    &#123;</span><br><span class="line">        public static IHostBuilder UseLog4Net(this IHostBuilder builder)</span><br><span class="line">        &#123;</span><br><span class="line">            var log4NetRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());</span><br><span class="line">            XmlConfigurator.Configure(log4NetRepository, new FileInfo(&quot;log4net.config&quot;));</span><br><span class="line"></span><br><span class="line">            return builder;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>  然后在Hosting层的Program中，调用这个扩展方法<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">  public static IHostBuilder CreateHostBuilder(string[] args) =&gt;</span><br><span class="line">    Host.CreateDefaultBuilder(args)</span><br><span class="line">        .UseLog4Net()</span><br><span class="line">        .ConfigureWebHostDefaults(webBuilder =&gt;</span><br><span class="line">        &#123;</span><br><span class="line">    webBuilder.UseStartup&lt;Startup&gt;();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>  然后在Hosting层中添加一个log4net.config文件，用来放log4net的配置<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">  &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;</span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">  &lt;configSections&gt;</span><br><span class="line">    &lt;section name=&quot;log4net&quot; type=&quot;log4net.Config.Log4NetConfigurationSectionHandler, log4net&quot;/&gt;</span><br><span class="line">  &lt;/configSections&gt;</span><br><span class="line">  &lt;log4net debug=&quot;false&quot;&gt;</span><br><span class="line"></span><br><span class="line">    &lt;appender name=&quot;info&quot; type=&quot;log4net.Appender.RollingFileAppender,log4net&quot;&gt;</span><br><span class="line">      &lt;param name=&quot;File&quot; value=&quot;log4net/info/&quot; /&gt;</span><br><span class="line">      &lt;param name=&quot;AppendToFile&quot; value=&quot;true&quot; /&gt;</span><br><span class="line">      &lt;param name=&quot;MaxSizeRollBackups&quot; value=&quot;-1&quot;/&gt;</span><br><span class="line">      &lt;param name=&quot;MaximumFileSize&quot; value=&quot;5MB&quot;/&gt;</span><br><span class="line">      &lt;param name=&quot;RollingStyle&quot; value=&quot;Composite&quot; /&gt;</span><br><span class="line">      &lt;param name=&quot;DatePattern&quot; value=&quot;yyyyMMdd\\HH&amp;quot;.log&amp;quot;&quot; /&gt;</span><br><span class="line">      &lt;param name=&quot;StaticLogFileName&quot; value=&quot;false&quot; /&gt;</span><br><span class="line">      &lt;layout type=&quot;log4net.Layout.PatternLayout,log4net&quot;&gt;</span><br><span class="line">        &lt;param name=&quot;ConversionPattern&quot; value=&quot;%n</span><br><span class="line">&#123;</span><br><span class="line">  &amp;quot;system&amp;quot;: &amp;quot;Sam.NetCore.Demo&amp;quot;,</span><br><span class="line">  &amp;quot;datetime&amp;quot;: &amp;quot;%d&amp;quot;,</span><br><span class="line">  &amp;quot;description&amp;quot;: &amp;quot;%m&amp;quot;,</span><br><span class="line">  &amp;quot;level&amp;quot;: &amp;quot;%p&amp;quot;,</span><br><span class="line">  &amp;quot;info&amp;quot;: &amp;quot;%exception&amp;quot;</span><br><span class="line">&#125;&quot; /&gt;</span><br><span class="line">      &lt;/layout&gt;</span><br><span class="line">      &lt;filter type=&quot;log4net.Filter.LevelRangeFilter&quot;&gt;</span><br><span class="line">        &lt;levelMin value=&quot;INFO&quot; /&gt;</span><br><span class="line">        &lt;levelMax value=&quot;INFO&quot; /&gt;</span><br><span class="line">      &lt;/filter&gt;</span><br><span class="line">    &lt;/appender&gt;</span><br><span class="line"></span><br><span class="line">    &lt;appender name=&quot;error&quot; type=&quot;log4net.Appender.RollingFileAppender,log4net&quot;&gt;</span><br><span class="line">      &lt;param name=&quot;File&quot; value=&quot;log4net/error/&quot; /&gt;</span><br><span class="line">      &lt;param name=&quot;AppendToFile&quot; value=&quot;true&quot; /&gt;</span><br><span class="line">      &lt;param name=&quot;MaxSizeRollBackups&quot; value=&quot;-1&quot;/&gt;</span><br><span class="line">      &lt;param name=&quot;MaximumFileSize&quot; value=&quot;5MB&quot;/&gt;</span><br><span class="line">      &lt;param name=&quot;RollingStyle&quot; value=&quot;Composite&quot; /&gt;</span><br><span class="line">      &lt;param name=&quot;DatePattern&quot; value=&quot;yyyyMMdd\\HH&amp;quot;.log&amp;quot;&quot; /&gt;</span><br><span class="line">      &lt;param name=&quot;StaticLogFileName&quot; value=&quot;false&quot; /&gt;</span><br><span class="line">      &lt;layout type=&quot;log4net.Layout.PatternLayout,log4net&quot;&gt;</span><br><span class="line">        &lt;param name=&quot;ConversionPattern&quot; value=&quot;%n</span><br><span class="line">&#123;</span><br><span class="line">  &amp;quot;system&amp;quot;: &amp;quot;Sam.NetCore.Demo&amp;quot;,</span><br><span class="line">  &amp;quot;datetime&amp;quot;: &amp;quot;%d&amp;quot;,</span><br><span class="line">  &amp;quot;description&amp;quot;: &amp;quot;%m&amp;quot;,</span><br><span class="line">  &amp;quot;level&amp;quot;: &amp;quot;%p&amp;quot;,</span><br><span class="line">  &amp;quot;info&amp;quot;: &amp;quot;%exception&amp;quot;</span><br><span class="line">&#125;&quot; /&gt;</span><br><span class="line">      &lt;/layout&gt;</span><br><span class="line">      &lt;filter type=&quot;log4net.Filter.LevelRangeFilter&quot;&gt;</span><br><span class="line">        &lt;levelMin value=&quot;ERROR&quot; /&gt;</span><br><span class="line">        &lt;levelMax value=&quot;ERROR&quot; /&gt;</span><br><span class="line">      &lt;/filter&gt;</span><br><span class="line">    &lt;/appender&gt;</span><br><span class="line"></span><br><span class="line">    &lt;root&gt;</span><br><span class="line">      &lt;level value=&quot;ALL&quot;&gt;&lt;/level&gt;</span><br><span class="line">      &lt;appender-ref ref=&quot;info&quot;/&gt;</span><br><span class="line">      &lt;appender-ref ref=&quot;error&quot;/&gt;</span><br><span class="line">    &lt;/root&gt;</span><br><span class="line"></span><br><span class="line">  &lt;/log4net&gt;</span><br><span class="line"></span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure></p>
+<p>好了，我们完成了对log4net的配置。下面调用一下</p>
+<h6 id="调用log4net"><a href="#调用log4net" class="headerlink" title="调用log4net"></a>调用log4net</h6><p>在hosting层的TestEntityController中，定义一个字段ILog logger，然后在构造函数中注册它<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">private readonly ITestEntityService service;</span><br><span class="line">private readonly ILog logger;</span><br><span class="line"></span><br><span class="line">public TestEntityController(ITestEntityService _service)</span><br><span class="line">&#123;</span><br><span class="line">    service = _service;</span><br><span class="line">    logger  = LogManager.GetLogger(typeof(TestEntityController));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后我们就可以在Action中调用了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public ActionResult&lt;TestEntityDto&gt; Get(int id)</span><br><span class="line">&#123;</span><br><span class="line">    this.logger.Info(&quot;testwll:&quot; + id);</span><br><span class="line">    var result = service.Get(id);</span><br><span class="line">    return Ok(result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>运行后，我们可以看到，已经有文件被写入日志了。</p>
+<h6 id="创建基类记录"><a href="#创建基类记录" class="headerlink" title="创建基类记录"></a>创建基类记录</h6><p>每一个控制器都要这样，可能会觉得繁琐，这里我用老套路Controller基类的方式来解决此问题。当然，也可以用.Net core的中间件。创建一个Controller的基类，然后其他控制器调用，就可以随时用logger，而且在基类的OnActionExecuting中可以直接写谁在调用这个函数，什么url，用来记录寻常访问日志。<br>Controller文件夹下新建一个基类，这里我起名叫<code>ControllerBaseSam</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">using log4net;</span><br><span class="line">using Microsoft.AspNetCore.Mvc;</span><br><span class="line">using Microsoft.AspNetCore.Mvc.Filters;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace Sam.NetCore.Demo.Hosting.Controllers</span><br><span class="line">&#123;</span><br><span class="line">    public class ControllerBaseSam : Controller</span><br><span class="line">    &#123;</span><br><span class="line">        protected readonly ILog logger;</span><br><span class="line">        public ControllerBaseSam()</span><br><span class="line">        &#123;</span><br><span class="line">            logger = LogManager.GetLogger(this.GetType());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public override void OnActionExecuting(ActionExecutingContext context)</span><br><span class="line">        &#123;</span><br><span class="line">            this.logger.Info(&quot;test.&quot; + this.GetType().Name);</span><br><span class="line">            base.OnActionExecuting(context);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>继承自Controller，重写了OnActionExecuting方法，在方法中统一写入了请求日志。</p>
+<p>其他控制器只要继承自这个类，就可以默认有日志写入，而且也可以手动调用logger了。</p>
+<p>Application也可以用一样的操作来进行日志记录。</p>
+<h5 id="第二种方法是对Microsoft的ILogger进行扩展"><a href="#第二种方法是对Microsoft的ILogger进行扩展" class="headerlink" title="第二种方法是对Microsoft的ILogger进行扩展"></a>第二种方法是对Microsoft的ILogger进行扩展</h5><p>因为微软在.net core 中内置了logger，所以我们可以对这个logger进行扩展，来完成调用。</p>
+<p>Utilities引用<code>Microsoft.Extensions.Logging.Log4Net.AspNetCore</code>，因为要扩展，所以引用的是这个Extensions包，包里也自带了log4net包。</p>
+<p>然后在Hosting的Program.cs注册一下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static IHostBuilder CreateHostBuilder(string[] args) =&gt;</span><br><span class="line">    Host.CreateDefaultBuilder(args)</span><br><span class="line">        .ConfigureLogging(loggingBuilder =&gt;</span><br><span class="line">        &#123;</span><br><span class="line">            loggingBuilder.AddLog4Net();</span><br><span class="line">        &#125;)</span><br><span class="line">        .ConfigureWebHostDefaults(webBuilder =&gt;</span><br><span class="line">        &#123;</span><br><span class="line">            webBuilder.UseStartup&lt;Startup&gt;();</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure></p>
+<p>这里也可以在Startup的Configure函数添加一个ILoggerFactory参数，然后在函数体中对loggerFactory进行AddLog4Net操作。</p>
+<p>需要注意的是，这里的log4net配置根节点要直接是<code>&lt;log4net&gt;</code>，如果以<code>&lt;Configuration&gt;</code>为根节点就会报一下错误<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">log4net: ERROR Xml element is -not a&lt;log4net&gt; element.</span><br></pre></td></tr></table></figure></p>
+<p>调用和第一种方法类似，只是直接依赖注入就可以，用ILogger类型直接做注入就可以了，参考.net core创建好时自带的那个WeatherForecastController。</p>
+<p>到此为止，一个基本的.net core WebAPI的构建就完成了，包含了基于DDD理念的基本分层以及各层用途，.NetCore的IOC注册，EFCore的迁移和使用，仓储模式，Service模式，DTO传输，AutoMapper对照，日志记录等基本东西。基于这个架子已经可以慢慢的添加具体业务了。<br>之后有机会再写一下关于自定义中间件，仓储抽象，异步编程，缓存，定时任务，Authentication与JWT鉴权这些东西吧。</p>
+<p>2021年5月1日劳动节，于深圳南山。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/23/VS和VScode使用连体字/" rel="next" title="VS和VScode使用连体字">
+                <i class="fa fa-chevron-left"></i> VS和VScode使用连体字
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Sam</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">87</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一部分，构建项目"><span class="nav-number">1.</span> <span class="nav-text">第一部分，构建项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二部分，跑起来看效果"><span class="nav-number">2.</span> <span class="nav-text">第二部分，跑起来看效果</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#建立Servcie"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">建立Servcie</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#建立Controller"><span class="nav-number">2.0.0.2.</span> <span class="nav-text">建立Controller</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#添加IOC注册"><span class="nav-number">2.0.0.3.</span> <span class="nav-text">添加IOC注册</span></a></li></ol></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#第三部分，添加数据库与EF的支持"><span class="nav-number">3.</span> <span class="nav-text">第三部分，添加数据库与EF的支持</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#添加nuget依赖"><span class="nav-number">3.0.0.1.</span> <span class="nav-text">添加nuget依赖</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#添加DBContext"><span class="nav-number">3.0.0.2.</span> <span class="nav-text">添加DBContext</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#添加一个实体"><span class="nav-number">3.0.0.3.</span> <span class="nav-text">添加一个实体</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#为此实体添加DBSet"><span class="nav-number">3.0.0.4.</span> <span class="nav-text">为此实体添加DBSet</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#迁移"><span class="nav-number">3.0.0.5.</span> <span class="nav-text">迁移</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#读取Hosting的AppSettings"><span class="nav-number">3.0.0.6.</span> <span class="nav-text">读取Hosting的AppSettings</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#Hosting中配置DBContext"><span class="nav-number">3.0.0.7.</span> <span class="nav-text">Hosting中配置DBContext</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第四部分，Repository联合Service，生成仿真API"><span class="nav-number">4.</span> <span class="nav-text">第四部分，Repository联合Service，生成仿真API</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#仓储"><span class="nav-number">4.0.0.1.</span> <span class="nav-text">仓储</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#DTO"><span class="nav-number">4.0.0.2.</span> <span class="nav-text">DTO</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#创建Service"><span class="nav-number">4.0.0.3.</span> <span class="nav-text">创建Service</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#Controller"><span class="nav-number">4.0.0.4.</span> <span class="nav-text">Controller</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#配置依赖注入"><span class="nav-number">4.0.0.5.</span> <span class="nav-text">配置依赖注入</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第五部分，AutoMapper数据映射"><span class="nav-number">5.</span> <span class="nav-text">第五部分，AutoMapper数据映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第六部分，自定义日志Log4Net"><span class="nav-number">6.</span> <span class="nav-text">第六部分，自定义日志Log4Net</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#第一种方法是直接使用Log4Net的Ilog"><span class="nav-number">6.0.1.</span> <span class="nav-text">第一种方法是直接使用Log4Net的Ilog</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#配置log4net"><span class="nav-number">6.0.1.1.</span> <span class="nav-text">配置log4net</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#调用log4net"><span class="nav-number">6.0.1.2.</span> <span class="nav-text">调用log4net</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#创建基类记录"><span class="nav-number">6.0.1.3.</span> <span class="nav-text">创建基类记录</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#第二种方法是对Microsoft的ILogger进行扩展"><span class="nav-number">6.0.2.</span> <span class="nav-text">第二种方法是对Microsoft的ILogger进行扩展</span></a></li></ol></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sam</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

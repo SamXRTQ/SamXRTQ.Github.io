@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/g.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/g.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/g.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="支持的协议OpenID Connect OAuth2.0 实践执行以下命令，全局安装模板1dotnet new -i IdentityServer4.Templates 执行以下命令，可以显示所有已安装模板1dotnet new 下面建立一个数据放内存里的模板1&amp;gt;dotnet new is4inmem  --name Idp 然后用Visual Studio 2019打开 Client Cr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Identity Server4 笔记记录">
+<meta property="og:url" content="http://yoursite.com/2021/04/18/Identity-Server4-笔记记录/index.html">
+<meta property="og:site_name" content="燕师傅">
+<meta property="og:description" content="支持的协议OpenID Connect OAuth2.0 实践执行以下命令，全局安装模板1dotnet new -i IdentityServer4.Templates 执行以下命令，可以显示所有已安装模板1dotnet new 下面建立一个数据放内存里的模板1&amp;gt;dotnet new is4inmem  --name Idp 然后用Visual Studio 2019打开 Client Cr">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/images/pasted-sam-140.png">
+<meta property="og:updated_time" content="2021-04-21T13:46:33.616Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Identity Server4 笔记记录">
+<meta name="twitter:description" content="支持的协议OpenID Connect OAuth2.0 实践执行以下命令，全局安装模板1dotnet new -i IdentityServer4.Templates 执行以下命令，可以显示所有已安装模板1dotnet new 下面建立一个数据放内存里的模板1&amp;gt;dotnet new is4inmem  --name Idp 然后用Visual Studio 2019打开 Client Cr">
+<meta name="twitter:image" content="http://yoursite.com/images/pasted-sam-140.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/04/18/Identity-Server4-笔记记录/">
+
+
+
+
+
+  <title>Identity Server4 笔记记录 | 燕师傅</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">燕师傅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/18/Identity-Server4-笔记记录/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sam">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="燕师傅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Identity Server4 笔记记录</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-04-18T17:17:02+08:00">
+                2021-04-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+    
+    
+
+   
+
+    
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="支持的协议"><a href="#支持的协议" class="headerlink" title="支持的协议"></a>支持的协议</h3><p>OpenID Connect</p>
+<p>OAuth2.0</p>
+<h3 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h3><p>执行以下命令，全局安装模板<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dotnet new -i IdentityServer4.Templates</span><br></pre></td></tr></table></figure></p>
+<p>执行以下命令，可以显示所有已安装模板<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dotnet new</span><br></pre></td></tr></table></figure></p>
+<p>下面建立一个数据放内存里的模板<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;dotnet new is4inmem  --name Idp</span><br></pre></td></tr></table></figure></p>
+<p>然后用Visual Studio 2019打开</p>
+<h5 id="Client-Credentials"><a href="#Client-Credentials" class="headerlink" title="Client Credentials"></a>Client Credentials</h5><p>最简单的一个，用于客户端获取是否可以运行的授权，跟用户无关。</p>
+<p>例如，一些服务或者定时运行的程序中，使用此授权方式。</p>
+<p>在Idp中的config中配置一下，然后建立一个控制台应用，叫<code>ConsoleClient</code></p>
+<p>在此控制台应用中添加IdentityModel库</p>
+<p>再建立一个API资源client  <code>Scope1Resource</code></p>
+<h5 id="PasswordGrant"><a href="#PasswordGrant" class="headerlink" title="PasswordGrant"></a>PasswordGrant</h5><p>涉及到用户，此处使用WPF来测试</p>
+<p>用户名和密码直接用来请求accesstoken，一般不用，用于遗留的程序</p>
+<p>此处建立一个winform项目，详见winformclient项目</p>
+<p>示例如下：</p>
+<p><img src="\images\pasted-sam-140.png" alt="upload successful"></p>
+<h5 id="Authorization-Code-Flow"><a href="#Authorization-Code-Flow" class="headerlink" title="Authorization Code Flow"></a>Authorization Code Flow</h5><h6 id="保护资源示例"><a href="#保护资源示例" class="headerlink" title="保护资源示例"></a>保护资源示例</h6><p>保护Asp.net core mvc客户端（为其他用户的身份认证）</p>
+<p>新建一个mvc项目，详见mvcclient项目</p>
+<p>ConfigureServices添加配置信息，Configure中添加中间件的使用，然后用户在访问时就会被中间件截获，跳转到identity server，然后登录后，跳转回本网站，该过程完全类似于之前写的iem的单点登录，只是这里不是用页面来种的token，而是存在cookie里。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">services.AddControllersWithViews();</span><br><span class="line"></span><br><span class="line">//一会试试干嘛用的</span><br><span class="line">JwtSecurityTokenHandler.DefaultMapInboundClaims = false;</span><br><span class="line"></span><br><span class="line">services.AddAuthentication(options =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    options.DefaultScheme = &quot;Cookies&quot;;</span><br><span class="line">    options.DefaultChallengeScheme =OpenIdConnectDefaults.AuthenticationScheme;</span><br><span class="line">&#125;).AddCookie(&quot;Cookies&quot;)</span><br><span class="line">.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    options.SignInScheme = &quot;Cookies&quot;;</span><br><span class="line">    options.Authority = &quot;http://localhost:5001&quot;;</span><br><span class="line">    options.RequireHttpsMetadata = false;</span><br><span class="line">    options.ClientId = &quot;mvc client&quot;;</span><br><span class="line">    options.ClientSecret = &quot;mvc secrect&quot;;</span><br><span class="line">    options.ResponseType = &quot;code&quot;;</span><br><span class="line">    options.SaveTokens = true;</span><br><span class="line"></span><br><span class="line">    options.Scope.Clear();</span><br><span class="line">    options.Scope.Add(&quot;scope1&quot;);  </span><br><span class="line">    options.Scope.Add(&quot;openid&quot;);</span><br><span class="line">    options.Scope.Add(&quot;profile&quot;);</span><br><span class="line">    options.Scope.Add(OidcConstants.StandardScopes.OfflineAccess);</span><br><span class="line">    options.Scope.Add(OidcConstants.StandardScopes.Email);</span><br><span class="line">    options.Scope.Add(OidcConstants.StandardScopes.Phone);</span><br><span class="line">    options.Scope.Add(OidcConstants.StandardScopes.Address);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">app.UseAuthentication();</span><br><span class="line"></span><br><span class="line">app.UseAuthorization();</span><br><span class="line"></span><br><span class="line">app.UseEndpoints(endpoints =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    endpoints.MapControllerRoute(</span><br><span class="line">        name: &quot;default&quot;,</span><br><span class="line">        pattern: &quot;&#123;controller=Home&#125;/&#123;action=Index&#125;/&#123;id?&#125;&quot;).RequireAuthorization();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>登出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">await HttpContext.SignOutAsync(&quot;Cookies&quot;);</span><br><span class="line">await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);</span><br></pre></td></tr></table></figure></p>
+<h6 id="刷新token"><a href="#刷新token" class="headerlink" title="刷新token"></a>刷新token</h6><p>idp中设置过期时间，过期后就失效了。<br>官网有个刷新的方法。<br>这里就不写了</p>
+<h5 id="Implicit-flow-vue"><a href="#Implicit-flow-vue" class="headerlink" title="Implicit flow + vue"></a>Implicit flow + vue</h5><p>访问被保护的资源<br>使用refresh token刷新access token</p>
+<p>vue直接用了project.vue.testemementui项目</p>
+<p>这里详细写一下三端逻辑，本次暂时没有实现自动刷新逻辑</p>
+<h6 id="idp端"><a href="#idp端" class="headerlink" title="idp端"></a>idp端</h6><p>config.js中增加一个client，命名为vueclient<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"> //vue client  implicit flow</span><br><span class="line"> new Client&#123;</span><br><span class="line"> ClientId=&quot;vue client&quot;,</span><br><span class="line">  AllowedGrantTypes = GrantTypes.Implicit,</span><br><span class="line">  // ClientSecrets=&#123; new Secret(&quot;vue secrect&quot;.Sha256())&#125;,</span><br><span class="line"></span><br><span class="line">   ClientUri=&quot;http://localhost:8080&quot;,</span><br><span class="line"></span><br><span class="line">AllowAccessTokensViaBrowser =true,</span><br><span class="line">RequireConsent =true,</span><br><span class="line">   //设置一个过期时间</span><br><span class="line">   AccessTokenLifetime=60*5,//60s</span><br><span class="line"></span><br><span class="line">   </span><br><span class="line">  RedirectUris=&#123;</span><br><span class="line">     &quot;http://localhost:8080/signin-oidc&quot;,</span><br><span class="line">     //下面这是刷新token的</span><br><span class="line">     &quot;http://localhost:8080/redirect-silentrenew&quot;</span><br><span class="line">     &#125;,</span><br><span class="line"></span><br><span class="line">  PostLogoutRedirectUris=&#123;&quot;http://localhost:8080&quot; &#125;,</span><br><span class="line">  AllowedCorsOrigins=&#123; &quot;http://localhost:8080&quot; &#125;,</span><br><span class="line">   AllowedScopes=&#123;</span><br><span class="line">        &quot;scope1&quot;,</span><br><span class="line">    IdentityServerConstants.StandardScopes.OpenId,</span><br><span class="line">    IdentityServerConstants.StandardScopes.Profile,</span><br><span class="line">         IdentityServerConstants.StandardScopes.Email,</span><br><span class="line">    IdentityServerConstants.StandardScopes.Address,</span><br><span class="line">    IdentityServerConstants.StandardScopes.Phone&#125;</span><br><span class="line"></span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure></p>
+<h6 id="api端逻辑"><a href="#api端逻辑" class="headerlink" title="api端逻辑"></a>api端逻辑</h6><p>添加跨域<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">services.AddCors(options =&gt; &#123;</span><br><span class="line">    options.AddPolicy(&quot;VueClientOrigin&quot;, builder =&gt; builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">app.UseCors(&quot;VueClientOrigin&quot;);</span><br></pre></td></tr></table></figure>
+<p>然后写了一个todo的controller</p>
+<h6 id="vue端逻辑"><a href="#vue端逻辑" class="headerlink" title="vue端逻辑"></a>vue端逻辑</h6><p>先npm安装oidc-client<br>主要分为三个页面，分别为login页面，用于跳转到idp</p>
+<p>sign页面，idp通过后跳转此页面，种token</p>
+<p>主页面，显示调用后的结果</p>
+<p>login页面<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">import Oidc from &quot;oidc-client&quot;;</span><br><span class="line"></span><br><span class="line">var oidcconfig = &#123;</span><br><span class="line">  authority: &quot;http://localhost:5001&quot;,</span><br><span class="line">  client_id: &quot;vue client&quot;,</span><br><span class="line">  redirect_uri: &quot;http://localhost:8080/signin-oidc&quot;,</span><br><span class="line">  post_logout_redirect_uri: &quot;http://localhost:8080&quot;,</span><br><span class="line">  silent_redirect_uri: &quot;http://localhost:8080/redirect-silentrenew&quot;,</span><br><span class="line">  scope: &quot;scope1 openid profile address email phone&quot;,</span><br><span class="line">  response_type: &quot;id_token token&quot;,</span><br><span class="line">  automaticSilentRenew: false,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">var mgr = new Oidc.UserManager(oidcconfig);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  name: &quot;HelloWorld&quot;,</span><br><span class="line">  data() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      msg: &quot;Welcome to Your Vue.js App&quot;,</span><br><span class="line">      tableData: null,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  beforeCreate() &#123;</span><br><span class="line">    mgr.signinRedirect();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>sign页面,其实就是种token<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">import Oidc from &quot;oidc-client&quot;;</span><br><span class="line"></span><br><span class="line">new Oidc.UserManager()</span><br><span class="line">  .signinRedirectCallback()</span><br><span class="line">  .then(function () &#123;</span><br><span class="line">    window.location = &quot;/#/Home&quot;;</span><br><span class="line">  &#125;)</span><br><span class="line">  .catch(function (e) &#123;&#125;);</span><br><span class="line">export default &#123;&#125;;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure></p>
+<p>API结果展示界面，此组件包含了一开始显示用户信息，按按钮后显示调用的api信息，点logout后登出<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;button @click=&quot;api&quot;&gt;调用API&lt;/button&gt;</span><br><span class="line">    &lt;button @click=&quot;logout&quot;&gt;退出登录&lt;/button&gt;</span><br><span class="line">    &lt;pre&gt;&#123;&#123; res &#125;&#125;&lt;/pre&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">import Oidc from &quot;oidc-client&quot;;</span><br><span class="line"></span><br><span class="line">var oidcconfig = &#123;</span><br><span class="line">  authority: &quot;http://localhost:5001&quot;,</span><br><span class="line">  client_id: &quot;vue client&quot;,</span><br><span class="line">  redirect_uri: &quot;http://localhost:8080/signin-oidc&quot;,</span><br><span class="line">  post_logout_redirect_uri: &quot;http://localhost:8080&quot;,</span><br><span class="line">  silent_redirect_uri: &quot;http://localhost:8080/redirect-silentrenew&quot;,</span><br><span class="line">  scope: &quot;scope1 openid profile address email phone&quot;,</span><br><span class="line">  response_type: &quot;id_token token&quot;,</span><br><span class="line">  automaticSilentRenew: true,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">var mgr = new Oidc.UserManager(oidcconfig);</span><br><span class="line"></span><br><span class="line">export default &#123;</span><br><span class="line">  name: &quot;Home&quot;,</span><br><span class="line">  data() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      res: &quot;My Home&quot;,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  methods: &#123;</span><br><span class="line">    api() &#123;</span><br><span class="line">      var that = this;</span><br><span class="line">      mgr.getUser().then(function (user) &#123;</span><br><span class="line">        var url = &quot;http://localhost:5003/api/todo&quot;;</span><br><span class="line"></span><br><span class="line">        var xhr = new XMLHttpRequest();</span><br><span class="line">        xhr.open(&quot;GET&quot;, url);</span><br><span class="line">        xhr.onload = function () &#123;</span><br><span class="line">          that.res = (xhr.status, JSON.parse(xhr.responseText));</span><br><span class="line">        &#125;;</span><br><span class="line">        xhr.setRequestHeader(&quot;Authorization&quot;, &quot;Bearer &quot; + user.access_token);</span><br><span class="line">        xhr.send();</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">    logout() &#123;</span><br><span class="line">      mgr.signoutRedirect();</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  mounted() &#123;</span><br><span class="line">    var that = this;</span><br><span class="line">    mgr.getUser().then(function (user) &#123;</span><br><span class="line">      if (user) &#123;</span><br><span class="line">        // this.res = (&quot;User logged in&quot;, user.profile);注意闭包</span><br><span class="line">        that.res = (&quot;User logged in&quot;, user.profile);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        that.res = &quot;User not logged in&quot;;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style scoped&gt;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure></p>
+<p>然后分别运行idp，api和vue   打开<code>localhost:8080</code>就可以看到效果</p>
+<h5 id="Hybrid-Flow"><a href="#Hybrid-Flow" class="headerlink" title="Hybrid Flow"></a>Hybrid Flow</h5><p> 使用HyBrid Flow保护ASP.NET Core</p>
+<p> 保护资源</p>
+<p> 刷新Token</p>
+<p> 处理Claims</p>
+<p> 基于策略的权限</p>
+<p> 建立一个mvc项目，叫HybridClient</p>
+<p> 简单说原理：跳转idp，输入用户名密码返回id token和code，这部分走前端浏览器通道，然后hybrid服务器走后端通道通过idtoken和code去请求accesstoken，至此就有了accesstoken了。</p>
+<p> 同之前的mvc client类似，idp添加一个hybrid client，然后hybrid client的MVC项目配置startup的配置和中间件，需要注意的是，有个错误<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">code challenge required</span><br></pre></td></tr></table></figure></p>
+<p> 需要在idp中配置以下属性<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RequirePkce=false</span><br></pre></td></tr></table></figure></p>
+<p> 下面研究一下角色问题</p>
+<h6 id="IDP的config添加角色"><a href="#IDP的config添加角色" class="headerlink" title="IDP的config添加角色"></a>IDP的config添加角色</h6> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static IEnumerable&lt;IdentityResource&gt; IdentityResources =&gt;</span><br><span class="line">   new IdentityResource[]</span><br><span class="line">   &#123;</span><br><span class="line">       new IdentityResources.OpenId(),</span><br><span class="line">       new IdentityResources.Profile(),</span><br><span class="line">       new IdentityResources.Address(),</span><br><span class="line">       new IdentityResources.Phone(),</span><br><span class="line">       new IdentityResources.Email(),</span><br><span class="line">       new IdentityResource(&quot;roles&quot;,&quot;角色&quot;,new List&lt;string&gt;&#123; JwtClaimTypes.Role&#125;)</span><br><span class="line">   &#125;;</span><br></pre></td></tr></table></figure>
+<p> 然后给用户配置角色名称  TestUser<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">new Claim(JwtClaimTypes.Role,&quot;管理员&quot;)</span><br></pre></td></tr></table></figure></p>
+<p> 然后再config的hybrid的client最后添加roles的scope<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">.....</span><br><span class="line">                   AllowedScopes=&#123;</span><br><span class="line">                       &quot;scope1&quot;,</span><br><span class="line">                   IdentityServerConstants.StandardScopes.OpenId,</span><br><span class="line">                   IdentityServerConstants.StandardScopes.Profile,</span><br><span class="line">                        IdentityServerConstants.StandardScopes.Email,</span><br><span class="line">                   IdentityServerConstants.StandardScopes.Address,</span><br><span class="line">                   IdentityServerConstants.StandardScopes.Phone,</span><br><span class="line">                                     &quot;roles&quot;&#125;</span><br></pre></td></tr></table></figure></p>
+<h6 id="hybrid-client的配置"><a href="#hybrid-client的配置" class="headerlink" title="hybrid client的配置"></a>hybrid client的配置</h6><p> startup中添加scope<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options.Scope.Add(&quot;roles&quot;);</span><br></pre></td></tr></table></figure></p>
+<p> 然后controller中<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> [Authorize(Roles =&quot;管理员,一般用户&quot;)]</span><br><span class="line">public IActionResult Index()</span><br><span class="line">&#123;</span><br><span class="line">    var client = User.IsInRole(&quot;管理员&quot;);</span><br><span class="line">    return View();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p> 但是报错了，经排查，是因为本mvc并没有识别jwt的client.</p>
+<p> startup中配置一下<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> </span><br><span class="line">//让claim的role作为系统识别的角色</span><br><span class="line">options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters</span><br><span class="line">&#123;</span><br><span class="line">    NameClaimType = JwtClaimTypes.Name,</span><br><span class="line">    RoleClaimType = JwtClaimTypes.Role</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p> 于是就可以了，但是新问题出现了，那就是没权限跳转的页面还是本身的默认页面</p>
+<p> 下面解决它<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">建立一个页面，叫AccessDenied</span><br></pre></td></tr></table></figure></p>
+<p> 然后再startup中配置一下默认的denied页面<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">     options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;</span><br><span class="line">&#125;).AddCookie(&quot;Cookies&quot;,options=&gt; &#123; options.AccessDeniedPath = &quot;/Authorization/AccessDenied&quot;; &#125;)</span><br></pre></td></tr></table></figure></p>
+<p> 至此，问题解决了</p>
+<h6 id="策略"><a href="#策略" class="headerlink" title="策略"></a>策略</h6><p> 策略</p>
+<p> 策略是干什么的呢，假如不用role来判断，而是用其他某几个属性联合判断有没有权限，那这时候就用到了策略</p>
+<p> 例如我们定义familyname为smith，location为somewhere的才可以访问，那么就在startup中配置一个策略<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> //添加策略</span><br><span class="line">services.AddAuthorization(options =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    options.AddPolicy(&quot;SmithInSomeWhere&quot;,builder=&gt; &#123;</span><br><span class="line">        builder.RequireAuthenticatedUser();</span><br><span class="line">        builder.RequireClaim(JwtClaimTypes.FamilyName, &quot;Smith&quot;);</span><br><span class="line">        builder.RequireClaim(&quot;location&quot;, &quot;somewhere&quot;);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p> 然后再controller就可以用了<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[Authorize(Policy = &quot;SmithInSomeWhere&quot;)]</span><br></pre></td></tr></table></figure></p>
+<h6 id="Requirement策略"><a href="#Requirement策略" class="headerlink" title="Requirement策略"></a>Requirement策略</h6><p> 这个意思就是自定义一个Requirement类，写入策略，然后注册上</p>
+<p> 写一个类<code>SmithInSomewhereRequirement</code>，写一个handler<code>SmithInSomewhereHandler</code></p>
+<p> 然后startup注册<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> services.AddAuthorization(options =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    options.AddPolicy(&quot;SmithInSomeWhere&quot;, builder =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        builder.AddRequirements(new Requirement.SmithInSomewhereRequirement());</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p> 然后注册一下依赖注入<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">services.AddSingleton&lt;IAuthorizationHandler, Requirement.SmithInSomewhereHandler&gt;();</span><br></pre></td></tr></table></figure></p>
+<p> 然后就可以了。<br> 需要注意的是，如果添加多个requirement，那么这个requirement的策略是：<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">如果一个成功，其他的并没有失败，那么就成功；</span><br><span class="line">如果有任一一个失败的，那么就失败；</span><br><span class="line">如果都没有成功，那也是失败。</span><br></pre></td></tr></table></figure></p>
+<h3 id="JWT-vs-Reference-Token"><a href="#JWT-vs-Reference-Token" class="headerlink" title="JWT vs Reference Token"></a>JWT vs Reference Token</h3><p> JWT token是离线的，不需要服务器与IDP通信<br> Reference是实时与IDP通信的，每次请求后端都会通信</p>
+<p> 在IDP的client配置里配置的时候<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AccessTokenType=AccessTokenType.Reference</span><br></pre></td></tr></table></figure></p>
+<p> 这样就可以了</p>
+<p> 如果client访问api1出错，那么需要idp的api1设置secrect，api1里面用authoriz，不再使用jwt，就可以了</p>
+<h3 id="外部登录"><a href="#外部登录" class="headerlink" title="外部登录"></a>外部登录</h3><p> Google在idp模板自带的例子有了，而且也不能连，算了</p>
+<h6 id="试试github吧"><a href="#试试github吧" class="headerlink" title="试试github吧"></a>试试github吧</h6><p>妈的，github也不能登录了。<br>安装包<code>AspNet.Security.OAuth.GitHub</code></p>
+<p>登录github，账户–settings–developsettings，建一个oauth app，按顺序输入。注册后就会有一个clientID和一个clientsecrect。</p>
+<p>然后在idp中按照google登录那个addgoogle注册一下就可以了</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/18/Net-Core实现Restful风格API笔记记录/" rel="next" title=".Net Core实现Restful风格API笔记记录">
+                <i class="fa fa-chevron-left"></i> .Net Core实现Restful风格API笔记记录
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/19/SQL相同ID取时间大的一条/" rel="prev" title="SQL相同ID取时间大的一条">
+                SQL相同ID取时间大的一条 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Sam</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">87</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#支持的协议"><span class="nav-number">1.</span> <span class="nav-text">支持的协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实践"><span class="nav-number">2.</span> <span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Client-Credentials"><span class="nav-number">2.0.1.</span> <span class="nav-text">Client Credentials</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#PasswordGrant"><span class="nav-number">2.0.2.</span> <span class="nav-text">PasswordGrant</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Authorization-Code-Flow"><span class="nav-number">2.0.3.</span> <span class="nav-text">Authorization Code Flow</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#保护资源示例"><span class="nav-number">2.0.3.1.</span> <span class="nav-text">保护资源示例</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#刷新token"><span class="nav-number">2.0.3.2.</span> <span class="nav-text">刷新token</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Implicit-flow-vue"><span class="nav-number">2.0.4.</span> <span class="nav-text">Implicit flow + vue</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#idp端"><span class="nav-number">2.0.4.1.</span> <span class="nav-text">idp端</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#api端逻辑"><span class="nav-number">2.0.4.2.</span> <span class="nav-text">api端逻辑</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#vue端逻辑"><span class="nav-number">2.0.4.3.</span> <span class="nav-text">vue端逻辑</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Hybrid-Flow"><span class="nav-number">2.0.5.</span> <span class="nav-text">Hybrid Flow</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#IDP的config添加角色"><span class="nav-number">2.0.5.1.</span> <span class="nav-text">IDP的config添加角色</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#hybrid-client的配置"><span class="nav-number">2.0.5.2.</span> <span class="nav-text">hybrid client的配置</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#策略"><span class="nav-number">2.0.5.3.</span> <span class="nav-text">策略</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#Requirement策略"><span class="nav-number">2.0.5.4.</span> <span class="nav-text">Requirement策略</span></a></li></ol></li></ol></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#JWT-vs-Reference-Token"><span class="nav-number">3.</span> <span class="nav-text">JWT vs Reference Token</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#外部登录"><span class="nav-number">4.</span> <span class="nav-text">外部登录</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#试试github吧"><span class="nav-number">4.0.0.1.</span> <span class="nav-text">试试github吧</span></a></li></ol></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sam</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

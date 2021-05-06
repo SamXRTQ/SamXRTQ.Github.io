@@ -261,7 +261,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/09/对基于System-ComponentModel-DataAnnotations特性标注的类进行合法性验证/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/28/Dictionary更改Key的方法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -280,7 +280,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/03/09/对基于System-ComponentModel-DataAnnotations特性标注的类进行合法性验证/" itemprop="url">对基于System.ComponentModel.DataAnnotations特性标注的类进行合法性验证</a></h1>
+                <a class="post-title-link" href="/2020/10/28/Dictionary更改Key的方法/" itemprop="url">Dictionary更改Key的方法</a></h1>
         
 
         <div class="post-meta">
@@ -292,8 +292,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-09T14:06:03+08:00">
-                2020-03-09
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-10-28T11:05:49+08:00">
+                2020-10-28
               </time>
             
 
@@ -339,14 +339,133 @@
       
         
           
-            <p>在使用MVC时，我们常使用System.ComponentModel.DataAnnotations的特性来对类的属性进行控制，这里我们写一个自己验证的方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public static void CheckValid(ViewModel._BaseEntity model)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    var context = new ValidationContext(model, null, null);</span><br><span class="line"></span><br><span class="line">    var results = new List&lt;ValidationResult&gt;();</span><br><span class="line">    Validator.TryValidateObject(model, context, results, true);</span><br><span class="line"></span><br><span class="line">    if(results.Count&gt;0)</span><br><span class="line">    &#123;</span><br><span class="line">        throw new Exception(results[0].ErrorMessage);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>当属性的值不满足特性约束时，将会抛出异常。</p>
-<h6 id="自定义特性扩展"><a href="#自定义特性扩展" class="headerlink" title="自定义特性扩展"></a>自定义特性扩展</h6><p>DataAnnotations提供的特性有时不能满足我们的需求，所以我们需要自己扩展特性，此处示例扩展特性,标注此特性的string类型，将不可以包含我们所约定的字符，否则会验证不通过。</p>
-<p>要点：重写IsValid(bool)及IsValid(ValidationResult)方法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]</span><br><span class="line">   public class NotContainCharsAttribute : ValidationAttribute</span><br><span class="line">   &#123;</span><br><span class="line">       public List&lt;char&gt; notContainsCharList&#123;get; private set;&#125;</span><br><span class="line"></span><br><span class="line">       public NotContainCharsAttribute(string chars)</span><br><span class="line">       &#123;</span><br><span class="line">           notContainsCharList = new List&lt;char&gt;();</span><br><span class="line">           if (!string.IsNullOrEmpty(chars))</span><br><span class="line">           &#123;</span><br><span class="line">               notContainsCharList = chars.ToList();</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       public override bool IsValid(object value)</span><br><span class="line">       &#123;</span><br><span class="line">           List&lt;char&gt; containsResults = InValidList(Convert.ToString(value));</span><br><span class="line">           return containsResults.Count == 0;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       protected override ValidationResult IsValid(object value, ValidationContext validationContext)</span><br><span class="line">       &#123;</span><br><span class="line">           List&lt;char&gt; containsResults = InValidList(Convert.ToString(value));</span><br><span class="line"></span><br><span class="line">           if (containsResults.Count == 0)</span><br><span class="line">               return ValidationResult.Success;</span><br><span class="line">           else</span><br><span class="line">               return new ValidationResult(string.Format(&quot;字段&#123;0&#125;包含一些非法字符：&#123;1&#125;&quot;, validationContext.DisplayName,string.Join(&quot;&quot;,containsResults.ToArray())), new[] &#123; validationContext.MemberName &#125;);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       private List&lt;char&gt; InValidList(string str)</span><br><span class="line">       &#123;</span><br><span class="line">           if (string.IsNullOrEmpty(str) || notContainsCharList.Count == 0) return new List&lt;char&gt;();</span><br><span class="line">         </span><br><span class="line">           return str.ToList().Distinct().Where(c =&gt; notContainsCharList.Contains(c)).Distinct().ToList();</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-<h6 id="WebAPI帮助中显示"><a href="#WebAPI帮助中显示" class="headerlink" title="WebAPI帮助中显示"></a>WebAPI帮助中显示</h6><p>在HelpPage–&gt;ModelDescriptions–&gt;ModelDescriptionGenerator.cs中的IDictionary中添加以下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123; typeof(StringNotContainCharsAttribute), a =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        StringNotContainCharsAttribute stringNotContainCharsAttribute = (StringNotContainCharsAttribute)a;</span><br><span class="line">        return String.Format(CultureInfo.CurrentCulture, &quot;String can not contain follow chars: [&#123;0&#125;]&quot;, string.Join(&quot;],[&quot;,stringNotContainCharsAttribute.notContainsCharList));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure></p>
-<p>即可完成帮助显示。效果如下图</p>
-<p><img src="\images\pasted-sam-107.png" alt="upload successful"></p>
+            <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">this.triggerDic.ToDictionary(k =&gt; k.Key == &quot;old&quot; ? &quot;new&quot; : k.Key, k =&gt; k.Value);</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/28/Linq去重/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sam">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="燕师傅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/09/28/Linq去重/" itemprop="url">Linq去重</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-09-28T15:02:43+08:00">
+                2020-09-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+    
+    
+
+   
+
+    
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>很Easy，先按去重的字段GroupBy，在取first。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.GroupBy(a =&gt; a.TimeStamp).Select(a =&gt; a.First())</span><br></pre></td></tr></table></figure></p>
 
           
         
@@ -395,7 +514,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/28/使用WEBZIP下载站点所有html链接/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/06/jquery中点击a中的span不跳转，以及阻止a事件/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -414,7 +533,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/02/28/使用WEBZIP下载站点所有html链接/" itemprop="url">使用WEBZIP下载站点所有html链接</a></h1>
+                <a class="post-title-link" href="/2020/08/06/jquery中点击a中的span不跳转，以及阻止a事件/" itemprop="url">jquery中点击a中的span不跳转，以及阻止a事件</a></h1>
         
 
         <div class="post-meta">
@@ -426,8 +545,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-02-28T10:05:34+08:00">
-                2020-02-28
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-08-06T23:13:50+08:00">
+                2020-08-06
               </time>
             
 
@@ -473,9 +592,11 @@
       
         
           
-            <p>最近WebAPI需要把帮助页面保存到本地，作为脱机浏览。以下截图为webzip使用方法。</p>
-<p><img src="\images\pasted-sam-106.png" alt="upload successful"></p>
-<p>然后执行，即可成功。</p>
+            <p>今天在写一个jquery的项目时，发生一个情况，那就是a标签下嵌套一个span，我希望点击这个span既不触发a的click事件，又不触发a的跳转动作。</p>
+<h6 id="阻止a的跳转动作"><a href="#阻止a的跳转动作" class="headerlink" title="阻止a的跳转动作"></a>阻止a的跳转动作</h6><p>给span添加一个样式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;span class=&quot;stophref&quot;&gt;点击我&lt;/span&gt;</span><br></pre></td></tr></table></figure></p>
+<p>然后监听这个样式的span，如果点击就触发停止跳转动作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$(&quot;.stophref&quot;).click(function(e) &#123;</span><br><span class="line">    e.preventDefault();</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<h6 id="阻止a的点击事件"><a href="#阻止a的点击事件" class="headerlink" title="阻止a的点击事件"></a>阻止a的点击事件</h6><p>道理很简单，就是在span的点击事件里阻止事件继续向外层扩散<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">window.event.stopPropagation();</span><br></pre></td></tr></table></figure></p>
+<p>大功告成~</p>
 
           
         
@@ -524,7 +645,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/26/权限认证/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/16/使用PDE-License对程序进行License验证/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -543,7 +664,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/02/26/权限认证/" itemprop="url">IEM.WEBAPI_Build项目权限认证</a></h1>
+                <a class="post-title-link" href="/2020/07/16/使用PDE-License对程序进行License验证/" itemprop="url">使用PDE.License对程序进行License验证</a></h1>
         
 
         <div class="post-meta">
@@ -555,8 +676,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-02-26T16:50:17+08:00">
-                2020-02-26
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-16T08:59:33+08:00">
+                2020-07-16
               </time>
             
 
@@ -602,13 +723,22 @@
       
         
           
-            <h3 id="权限认证说明"><a href="#权限认证说明" class="headerlink" title="权限认证说明"></a>权限认证说明</h3><p>在iEM.WebAPI_Build中，除获取Ticket外，任何操作都需要进行权限认证，此处对认证方法做说明。</p>
-<h5 id="获取Ticket"><a href="#获取Ticket" class="headerlink" title="获取Ticket"></a>获取Ticket</h5><p>通过 Tickets 中的API，传入用户名和密码，获取Ticket认证信息，认证通过返回以下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;State&quot;: true,</span><br><span class="line">  &quot;Ticket&quot;: &quot;3E7F70648718064186FB80DEC739D0D96803BD5C8DCA1B5CB96086C371147&quot;,</span><br><span class="line">  &quot;Expire&quot;: &quot;2020-02-26 18:51:53&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>认证失败则返回以下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;State&quot;: false,</span><br><span class="line">  &quot;Ticket&quot;: null,</span><br><span class="line">  &quot;Expire&quot;: &quot;0001-01-01 00:00:00&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>Expire代表此ticket过期时间。</p>
-<h6 id="传递ticket完成认证"><a href="#传递ticket完成认证" class="headerlink" title="传递ticket完成认证"></a>传递ticket完成认证</h6><p>在进行API业务请求的时候，将获取的Ticket加入Header传入请求中，如以下示例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$.ajax(&#123;</span><br><span class="line">    url: &quot;/userapi/users/GetUserByName&quot;,</span><br><span class="line">    beforeSend: function (XHR) &#123; //xhr XML Http Request</span><br><span class="line">        //发送ajax请求之前向http的head里面加入验证信息</span><br><span class="line">        var ticket=&quot;3E7F70648718064186FB80DEC739D0D96803BD5C8DCA1B5CB96086C371147&quot;;</span><br><span class="line">        XHR.setRequestHeader(&apos;Authorization&apos;, &apos;BasicAuth &apos; + ticket);</span><br><span class="line">    &#125;,</span><br><span class="line">    success: function (data) &#123;</span><br><span class="line">        alert(data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
-<p>如果认证失败，将会抛出异常，异常状态码为401，异常的Json如下格式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;StatusCode&quot;: 401,</span><br><span class="line">  &quot;Message&quot;: &quot;Unauthorized(No ticket)&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>如果认证成功，将会返回正常的业务结果。</p>
+            <p>在定做程序中，需要验证License来确定客户运行的程序是否合法。</p>
+<p>PDE.LicenseVerification就是咱们公司的License验证类库。</p>
+<p>验证License主要分为两种，一种是验证License服务，另一种是验证Lic文件，下面分别说明。</p>
+<h5 id="验证License服务"><a href="#验证License服务" class="headerlink" title="验证License服务"></a>验证License服务</h5><p> 一般在服务器上会运行我们的License服务，服务会包含该服务器可用的程序信息，我们在程序内部验证服务即可。验证方法如下</p>
+<p> 1.引用<code>PDE.LicenseVerification</code>类库；</p>
+<p> 2.调用验证服务方法<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> //校验License是否正确</span><br><span class="line">bool isRightLicense = PDE.LicenseVerification.Verification.CheckLicenseService(&quot;AppCode&quot;, DateTime.Now, out int errorCode);</span><br><span class="line">//如果License错误，抛出异常，并提示错误码</span><br><span class="line">if (!isRightLicense)</span><br><span class="line">&#123;</span><br><span class="line">    throw new Exception($&quot;License error(&#123;errorCode&#125;).Please contact CRTsoft.&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p> 其中AppCode是程序的唯一编码，需要主管确认。</p>
+<h5 id="验证License文件"><a href="#验证License文件" class="headerlink" title="验证License文件"></a>验证License文件</h5><p> 文件方式的License主要用于单个客户端(Form)程序，此时客户端会带有一个本机器可用的License文件，我们在客户端程序内部进行验证License</p>
+<p> 1.引用<code>PDE.LicenseVerification</code>类库；</p>
+<p> 2.调用验证文件方法<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> //校验License是否正确</span><br><span class="line">bool isRightLicense = PDE.LicenseVerification.Verification.CheckLicenseFile(&quot;AppCode&quot;, DateTime.Now, out int errorCode);</span><br><span class="line">//如果License错误，抛出异常，并提示错误码</span><br><span class="line">if (!isRightLicense)</span><br><span class="line">&#123;</span><br><span class="line">    throw new Exception($&quot;License error(&#123;errorCode&#125;).Please contact CRTsoft.&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p> 与上面验证服务类似，需要注意的是本函数默认验证的Lic文件需与当前exe在同一目录下，且名称相同（仅扩展名不同,exe和lic）。</p>
+<p> 如需自定义License文件全路径等信息，本函数有重载函数，可以输入参数。</p>
+<h5 id="验证方法写在哪里？"><a href="#验证方法写在哪里？" class="headerlink" title="验证方法写在哪里？"></a>验证方法写在哪里？</h5><p> 对于Winform程序，写在Program入口信息处，如果验证不通过直接抛出异常阻止继续执行；</p>
+<p> 对于Windows Service程序，写在定时器内，扫描执行函数时，对License进行验证，如果验证不通过就抛出异常并停止当前服务。</p>
+<p> 对于Asp.Net WebForm程序，写在BasePage基类的Page_Init函数中，每个页面访问时都会先验证License，如不通过就抛出异常，终止页面业务请求。</p>
+<p> 对于Asp.Net MVC或WebAPI程序，自定义过滤器，并全局引用。此时，客户调用任意API就会触发验证License函数，如不通过就抛出异常，终止业务请求。</p>
 
           
         
@@ -657,7 +787,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/25/WebAPI输出Json格式汇总/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/14/C-String替换Replace忽略大小写/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -676,7 +806,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/02/25/WebAPI输出Json格式汇总/" itemprop="url">WebAPI输出Json格式汇总</a></h1>
+                <a class="post-title-link" href="/2020/07/14/C-String替换Replace忽略大小写/" itemprop="url">C#String替换Replace忽略大小写</a></h1>
         
 
         <div class="post-meta">
@@ -688,8 +818,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-02-25T18:36:33+08:00">
-                2020-02-25
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-14T15:46:37+08:00">
+                2020-07-14
               </time>
             
 
@@ -735,9 +865,10 @@
       
         
           
-            <h5 id="输出Json格式-默认输出XML，Clear-XML"><a href="#输出Json格式-默认输出XML，Clear-XML" class="headerlink" title="输出Json格式(默认输出XML，Clear XML)"></a>输出Json格式(默认输出XML，Clear XML)</h5><p>Global的Start中添加以下代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GlobalConfiguration.Configuration.Formatters.XmlFormatter.SupportedMediaTypes.Clear();</span><br></pre></td></tr></table></figure></p>
-<h5 id="输出Json默认文本格式缩进"><a href="#输出Json默认文本格式缩进" class="headerlink" title="输出Json默认文本格式缩进"></a>输出Json默认文本格式缩进</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var jsonSerializerSettings = GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings;</span><br><span class="line">//Json显示缩进</span><br><span class="line">jsonSerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;</span><br></pre></td></tr></table></figure>
-<h5 id="输出Json格式的时间格式化为-yyyy-MM-dd-HH-mm-ss"><a href="#输出Json格式的时间格式化为-yyyy-MM-dd-HH-mm-ss" class="headerlink" title="输出Json格式的时间格式化为 yyyy-MM-dd HH:mm:ss"></a>输出Json格式的时间格式化为 yyyy-MM-dd HH:mm:ss</h5><p>默认输出的时间格式是带T的，通过Global的Start中添加以下代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var jsonSerializerSettings = GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings;</span><br><span class="line"></span><br><span class="line">//时间格式</span><br><span class="line">jsonSerializerSettings.DateFormatString = &quot;yyyy-MM-dd HH:mm:ss&quot;;</span><br></pre></td></tr></table></figure></p>
+            <p>在.Net中对string进行替换一般用Replace，但是如果是忽略大小写，一般有几种方式，或者写函数判断位置，替换后拼接，或者使用Regex。这里说说使用Regex的情况</p>
+<h6 id="使用Regex"><a href="#使用Regex" class="headerlink" title="使用Regex"></a>使用Regex</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Regex.Replace(str, oldValue, newValue, RegexOptions.IgnoreCase)</span><br></pre></td></tr></table></figure>
+<p>但是其原理是使用正则表达式匹配，那么就会存在正则特殊字符，例如括号，斜杠等匹配错误的问题，于是我们需要对oldValue进行一下转义<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Regex.Replace(str, Regex.Escape(oldValue), newValue, RegexOptions.IgnoreCase)</span><br></pre></td></tr></table></figure></p>
+<p>使用Escape转义后，大工告成矣。</p>
 
           
         
@@ -786,7 +917,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/06/使用强签名，防止DLL被篡改/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/08/未能找到路径-csc-exe的一部分/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -805,7 +936,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/02/06/使用强签名，防止DLL被篡改/" itemprop="url">使用强签名，防止DLL被篡改</a></h1>
+                <a class="post-title-link" href="/2020/07/08/未能找到路径-csc-exe的一部分/" itemprop="url">未能找到路径 csc.exe的一部分</a></h1>
         
 
         <div class="post-meta">
@@ -817,8 +948,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-02-06T17:07:00+08:00">
-                2020-02-06
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-08T08:40:04+08:00">
+                2020-07-08
               </time>
             
 
@@ -864,9 +995,13 @@
       
         
           
-            <p>在项目开发中，类库（DLL）有时需要防止被篡改，采用以下方案解决。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">类库项目--属性--签名--为程序集签名(选中)--新建强名称密匙文件--输入密码</span><br></pre></td></tr></table></figure></p>
-<p>然后重新生成DLL，再需要引用的项目中重新引用。</p>
-<p>此方法可却被调用的DLL不可随意篡改替换。</p>
+            <p>最近在WebAPI中，领导机器部署后报错<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">未能找到路径“~\bin\roslyn\csc.exe”的一部分</span><br></pre></td></tr></table></figure></p>
+<p>只能从我本机将roslyn目录拷贝给领导，手动放到bin文件下才可以</p>
+<p>然后从网上找了解决方案，让安装以下两个Nuget包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">　Microsoft.CodeDom.Providers.DotNetCompilerPlatform</span><br><span class="line">　Microsoft.Net.Compilers</span><br></pre></td></tr></table></figure></p>
+<p>我看了项目，第一个包Nuget已有，第二个没有，然后Nuget搜了一下，没想到直接安装失败了，项目都编译不通过了，我只能用记事本打开csproj文件，删掉<code>Microsoft.Net.Compilers</code>有关内容，重新打开才编译通过。</p>
+<p>后面又找到一个解决方案，按步骤操作后弃用了csc，当然我现在也不知道有什么影响，反正编译都能通过了，此处记录一下，后续原理之后再深究<br>将这两个Nuget包删了(我项目原本就只有第一个)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">　Microsoft.CodeDom.Providers.DotNetCompilerPlatform</span><br><span class="line">　Microsoft.Net.Compilers</span><br></pre></td></tr></table></figure></p>
+<p>打开web.config，将相关引用删了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;system.codedom&gt;</span><br><span class="line">  &lt;compilers&gt;</span><br><span class="line">    &lt;compiler language=&quot;c#;cs;csharp&quot; extension=&quot;.cs&quot; type=&quot;Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider, Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35&quot; warningLevel=&quot;4&quot; compilerOptions=&quot;/langversion:default /nowarn:1659;1699;1701&quot; /&gt;</span><br><span class="line">    &lt;compiler language=&quot;vb;vbs;visualbasic;vbscript&quot; extension=&quot;.vb&quot; type=&quot;Microsoft.CodeDom.Providers.DotNetCompilerPlatform.VBCodeProvider, Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35&quot; warningLevel=&quot;4&quot; compilerOptions=&quot;/langversion:default /nowarn:41008 /define:_MYTYPE=\&quot;Web\&quot; /optionInfer+&quot; /&gt;</span><br><span class="line">  &lt;/compilers&gt;</span><br><span class="line">&lt;/system.codedom&gt;</span><br></pre></td></tr></table></figure></p>
+<p>然后重新生成编译后，项目中默认已经没有 <code>roslyn</code> 文件夹了。</p>
 
           
         
@@ -915,7 +1050,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/09/Net-Framework版本升级提示Microsoft-CSharp-RuntimeBinder-Binder错误/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/28/使用Cordova将H5-vue-打包为安卓apk/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -934,7 +1069,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/01/09/Net-Framework版本升级提示Microsoft-CSharp-RuntimeBinder-Binder错误/" itemprop="url">.Net Framework版本升级提示Microsoft.CSharp.RuntimeBinder.Binder错误</a></h1>
+                <a class="post-title-link" href="/2020/06/28/使用Cordova将H5-vue-打包为安卓apk/" itemprop="url">使用Cordova将H5(vue)打包为安卓apk</a></h1>
         
 
         <div class="post-meta">
@@ -946,8 +1081,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-09T10:37:59+08:00">
-                2020-01-09
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-06-28T17:11:52+08:00">
+                2020-06-28
               </time>
             
 
@@ -993,10 +1128,45 @@
       
         
           
-            <p>在.Net Framework从3.5升级4.0版本后，在Win7或早期Windows版本上运行，可能报错：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">预定义的类型“Microsoft.CSharp.RuntimeBinder.Binder”未定义或未导入</span><br></pre></td></tr></table></figure></p>
-<p>经过查询是因为缺少dll引用，解决方法有两个</p>
-<h6 id="第一种方法-推荐"><a href="#第一种方法-推荐" class="headerlink" title="第一种方法(推荐)"></a>第一种方法(推荐)</h6><p>在项目文件(.csproj)的ItemGroup节点加入如下代码，重启项目。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;Reference Include=&quot;Microsoft.CSharp&quot; /&gt;</span><br></pre></td></tr></table></figure></p>
-<h6 id="第二种方法"><a href="#第二种方法" class="headerlink" title="第二种方法"></a>第二种方法</h6><p>手动引用如下DLL，以4.0项目为例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Microsoft.CSharp.dll</span><br></pre></td></tr></table></figure></p>
+            <p>最近用vue做了一个移动端的小网页，希望研究一下将它打包为安卓APK，记录一下步骤。</p>
+<p>需要说明的是，中间遇到很多坑，主要是因为墙内墙外网络不通的问题，毕竟打包离不开google。</p>
+<h4 id="环境篇"><a href="#环境篇" class="headerlink" title="环境篇"></a>环境篇</h4><h6 id="Node-js、NPM"><a href="#Node-js、NPM" class="headerlink" title="Node.js、NPM"></a>Node.js、NPM</h6><p>这个不说了，前面搭建hexo时文章详细记录了</p>
+<h6 id="JDK"><a href="#JDK" class="headerlink" title="JDK"></a>JDK</h6><p>官网下载，我是百度找了个从百度云下的，Oracle现在下载都要账号了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html</span><br></pre></td></tr></table></figure></p>
+<p>然后配置环境变量，Windows新建变量<code>JAVA_HOME</code>,目录为<code>jdk1.8.0_212</code>。然后配置<code>Path</code>，增加<code>%JAVA_HOME%\bin</code>和<code>%JAVA_HOME%\jre\bin</code>。</p>
+<p>Mac需要</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vim ~/.Bash_Profile</span><br><span class="line">export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home</span><br><span class="line">export PATH=$JAVA_HOME/bin:$PATH</span><br><span class="line">source ~/.bash_profile</span><br></pre></td></tr></table></figure>
+<h6 id="Andorid-SDK"><a href="#Andorid-SDK" class="headerlink" title="Andorid SDK"></a>Andorid SDK</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://www.androiddevtools.cn/</span><br></pre></td></tr></table></figure>
+<p>找SDK Tools，下载，一两百M那个，别下载成Studio了</p>
+<p>Windows：</p>
+<p>下载好解压后，运行SDK Manager，然后选择要装的，一般默认的加9.0,8.0等版本的SDK platform和Sources For Android SDK（第一个和最后一个）就行了。</p>
+<p>配置环境变量：增加变量<code>ANDROID_SDK_HOME</code>,目录为：解压的目录; Path中增加<code>%ANDROID_SDK_HOME%\platform-tools</code>和<code>%ANDROID_SDK_HOME%\tools</code></p>
+<p>Mac:<br>一样下载解压，通过命令执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd Downloads/android/android-sdk-macosx/tools</span><br><span class="line">./android</span><br></pre></td></tr></table></figure></p>
+<p>配置环境变量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export ANDROID_HOME=/Users/[user name]/Library/Android/sdk</span><br><span class="line">export PATH=$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/tools</span><br></pre></td></tr></table></figure></p>
+<h6 id="Gradle"><a href="#Gradle" class="headerlink" title="Gradle"></a>Gradle</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://services.gradle.org/distributions/</span><br></pre></td></tr></table></figure>
+<p>我下载了那个4.10.3-all，因为我开始下的6，后来打包它又自己下4.10.3了，所以第二次干脆直接下的这个版本</p>
+<p>环境变量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GRADLE_HOME</span><br><span class="line">%GRADLE_HOME%\bin</span><br></pre></td></tr></table></figure></p>
+<h6 id="安装Cordova"><a href="#安装Cordova" class="headerlink" title="安装Cordova"></a>安装Cordova</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g cordova</span><br></pre></td></tr></table></figure>
+<p>注意，这里一定要npm，不能cnpm，否则后面不能create，npm连不上的，直接把npm镜像换成淘宝镜像</p>
+<h4 id="项目篇"><a href="#项目篇" class="headerlink" title="项目篇"></a>项目篇</h4><h6 id="创建Cordova项目"><a href="#创建Cordova项目" class="headerlink" title="创建Cordova项目"></a>创建Cordova项目</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cordova create myproject com.crtsoft.iem myproject</span><br><span class="line">cd myproject</span><br><span class="line">cordova platforms add android</span><br></pre></td></tr></table></figure>
+<h6 id="VUE项目"><a href="#VUE项目" class="headerlink" title="VUE项目"></a>VUE项目</h6><p>把vue项目复制到cordova的项目的根目录下</p>
+<p>修改Vue项目config/index.js文件.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Index地址修改为 ../../www/index.html</span><br><span class="line">AssetsRoot地址修改为 ../../www</span><br></pre></td></tr></table></figure>
+<p>编译之</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run build</span><br></pre></td></tr></table></figure>
+<h4 id="打包篇"><a href="#打包篇" class="headerlink" title="打包篇"></a>打包篇</h4><h6 id="检查环境"><a href="#检查环境" class="headerlink" title="检查环境"></a>检查环境</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cordova requirements</span><br></pre></td></tr></table></figure>
+<p>不报错就是OK，一般检查Jdk，Android SDK，Gradle，虚拟机这几项。</p>
+<h6 id="打包debug"><a href="#打包debug" class="headerlink" title="打包debug"></a>打包debug</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cordova build android</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，这里会自动下载gradle，墙内基本无法访问，会报错，就算不报错，后面你也打包不成，放弃吧。</p>
+<p>翻墙后下载的也不快，所以这里可以用浏览器下载好，然后放在<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~/.gradle\wrapper\dists\gradle-3.0-all\23vckjsl324lk</span><br></pre></td></tr></table></figure></p>
+<p>后面那串乱码的文件夹名称不固定，找个乱码的并且修改日期最新的，就它了，放进去。</p>
+<h6 id="打包release"><a href="#打包release" class="headerlink" title="打包release"></a>打包release</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cordova build android --release</span><br></pre></td></tr></table></figure>
+<p>生成后，在<code>/cordovaApp/platforms/android/app/build/outputs/apk/</code>的debug或realease里。</p>
+<h6 id="签名文件"><a href="#签名文件" class="headerlink" title="签名文件"></a>签名文件</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">keytool -genkey -v -keystore C:\test.keystore -alias test -keyalg RSA -validity 20000</span><br></pre></td></tr></table></figure>
+<p>这里要记住alias的名，注意这里在windows下用git bash会乱码，用cmd显示正常，然后需要输入开发者的名称，组织，单位，城市等等，注意此过程有2个密码，一个是密匙库口令，一个是别名口令，反正记着这两个密码，然后执行后，C根目录下（随意目录）就有这个keystore文件了，拷贝之。</p>
+<h6 id="给release签名"><a href="#给release签名" class="headerlink" title="给release签名"></a>给release签名</h6><p>将keystore和unsigned的apk放在一起，cd到这里<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore test.keystore app-release-unsigned.apk test</span><br></pre></td></tr></table></figure></p>
+<p>让输两次密码吧应该，我忘记了，昨晚搞到这时候基本要崩溃了，因为墙的问题，差点气死。</p>
+<p>然后那个unsigned的apk直接就变成签名的了，不会生成新的，复制到手机上就可以安装了。</p>
+<p>OKay,That is all.</p>
 
           
         
@@ -1045,7 +1215,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/09/C-获取当前运行环境-X86-X64/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/22/Winform菜单栏勾选框错位的问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -1064,7 +1234,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/01/09/C-获取当前运行环境-X86-X64/" itemprop="url">C#获取当前运行环境(X86 X64)</a></h1>
+                <a class="post-title-link" href="/2020/05/22/Winform菜单栏勾选框错位的问题/" itemprop="url">Winform菜单栏勾选框错位的问题</a></h1>
         
 
         <div class="post-meta">
@@ -1076,8 +1246,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-09T10:32:25+08:00">
-                2020-01-09
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-22T13:15:19+08:00">
+                2020-05-22
               </time>
             
 
@@ -1123,9 +1293,9 @@
       
         
           
-            <p>在读取写入注册表时，64位的操作系统对32位程序做了特殊处理，32位程序只能读取和写入WOW6432Node节点，所以我们有时需要判断当前程序是以32位编译环境运行还是64位。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Environment.Is64BitProcess</span><br></pre></td></tr></table></figure></p>
-<p>返回bool型。</p>
-<p>需要注意的是，此方法验证的是调用程序的运行环境。</p>
+            <p><img src="\images\pasted-sam-108.png" alt="upload successful"></p>
+<p>此问题是由于更改父级菜单的属性高度，导致不匹配的问题。</p>
+<p>解决方案<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">更改父级MenuStrip的ImageScalingSize为默认的16,16</span><br></pre></td></tr></table></figure></p>
 
           
         
@@ -1174,7 +1344,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/03/C-获取命名空间/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/22/C-获取所有继承类/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -1193,7 +1363,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/01/03/C-获取命名空间/" itemprop="url">C#获取命名空间</a></h1>
+                <a class="post-title-link" href="/2020/05/22/C-获取所有继承类/" itemprop="url">C#获取所有继承类</a></h1>
         
 
         <div class="post-meta">
@@ -1205,8 +1375,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-03T16:17:20+08:00">
-                2020-01-03
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-22T13:14:40+08:00">
+                2020-05-22
               </time>
             
 
@@ -1252,10 +1422,7 @@
       
         
           
-            <p>在C#程序中，我们常常需要获取当前类的命名空间，如果是一个实体类，那么获取方法很简单<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">this.GetType().Namespace</span><br></pre></td></tr></table></figure></p>
-<p>如果是一个静态类，那么就需要通过自身的调用方法来获取方法所在的命名空间<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.Reflection.MethodBase.GetCurrentMethod().ReflectedType.Namespace</span><br></pre></td></tr></table></figure></p>
-<p>The End.</p>
-
+            <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var settings = typeof(_GeneralSettings).Assembly.GetTypes() //获取当前类库下所有类型</span><br><span class="line">    .Where(t =&gt; typeof(_GeneralSettings).IsAssignableFrom(t)) //获取间接或直接继承t的所有类型</span><br><span class="line">    .Where(t =&gt; !t.IsAbstract &amp;&amp; t.IsClass) //获取非抽象类 排除接口继承</span><br><span class="line">    .OrderBy(a =&gt; a.Name)</span><br><span class="line">    .Select(t =&gt; (_GeneralSettings)Activator.CreateInstance(t));</span><br></pre></td></tr></table></figure>
           
         
       
@@ -1303,7 +1470,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/01/C-创建带有命名空间的XML节点-属性/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/15/Datatable使用Linq/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -1322,7 +1489,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/01/01/C-创建带有命名空间的XML节点-属性/" itemprop="url">C#创建带有命名空间的XML节点/属性</a></h1>
+                <a class="post-title-link" href="/2020/05/15/Datatable使用Linq/" itemprop="url">Datatable使用Linq</a></h1>
         
 
         <div class="post-meta">
@@ -1334,8 +1501,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-01T15:23:59+08:00">
-                2020-01-01
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-15T16:25:05+08:00">
+                2020-05-15
               </time>
             
 
@@ -1381,142 +1548,7 @@
       
         
           
-            <p>在最近的项目中，需要创建XML文档，在这些格式的XML文档中，有的节点或属性是有命名空间的，此处记录一下带有命名空间的XML节点或属性的创建。</p>
-<p>先看XML示例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;svg xmlns:PB=&quot;urn:osisoft-com-pb&quot; xmlns:PBI=&quot;urn:osisoft-com-interface&quot;&gt;</span><br><span class="line">  &lt;PBI:Symbol name=&quot;Polygon1_MS&quot;/&gt;</span><br><span class="line">  &lt;g id=&quot;GROUP3&quot; PB:IsMultiState=&quot;False&quot; PB:Type=&quot;0&quot; PB:Visible=&quot;True&quot;&gt;</span><br><span class="line">  &lt;/g&gt;</span><br><span class="line">&lt;/svg&gt;</span><br></pre></td></tr></table></figure></p>
-<p>上述示例中，根节点中定义了PB和PBI的命名空间，在子节点中,Symbol的节点是一个带有命名空间的节点，而g节点中，含有PB:IsMultiState等带有命名空间的属性。</p>
-<p>下面记录代码片段</p>
-<h6 id="定义命名空间常量"><a href="#定义命名空间常量" class="headerlink" title="定义命名空间常量"></a>定义命名空间常量</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public const string PB = &quot;urn:osisoft-com-pb&quot;;</span><br><span class="line">public const string PBI = &quot;urn:osisoft-com-interface&quot;;</span><br></pre></td></tr></table></figure>
-<h6 id="根节点中定义命名空间"><a href="#根节点中定义命名空间" class="headerlink" title="根节点中定义命名空间"></a>根节点中定义命名空间</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">svgEle.SetAttribute(&quot;xmlns:PB&quot;, PINS.PB);</span><br><span class="line">svgEle.SetAttribute(&quot;xmlns:PBI&quot;, PINS.PBI);</span><br></pre></td></tr></table></figure>
-<h6 id="创建带有命名空间的节点"><a href="#创建带有命名空间的节点" class="headerlink" title="创建带有命名空间的节点"></a>创建带有命名空间的节点</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">XmlElement stateEle = xmlDoc.CreateElement(&quot;PB&quot;, &quot;MSState&quot;, PINS.PB);</span><br></pre></td></tr></table></figure>
-<h6 id="创建带有命名空间的属性"><a href="#创建带有命名空间的属性" class="headerlink" title="创建带有命名空间的属性"></a>创建带有命名空间的属性</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">XmlElement polygonEle = xmlDoc.CreateElement(&quot;test&quot;);</span><br><span class="line">polygonEle.SetAttribute(&quot;Type&quot;, PINS.PB, PB_Type);</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/01/SqlServer2012及更高版本分页/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Sam">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="燕师傅">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/01/01/SqlServer2012及更高版本分页/" itemprop="url">SqlServer2012及更高版本分页</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-01T13:47:58+08:00">
-                2020-01-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-    
-    
-
-   
-
-    
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在Sqlserver2008及以前，我们通过ROW_NUMBER()的方法来分页，在Sqlserver2012中提供了Offset与Fetch Next … Rows only，所以我们可以使用这种方法分页。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * from IEMModels ORDER by ModelID OFFSET ((2-1)*10) ROWS FETCH next 10 rows only</span><br></pre></td></tr></table></figure></p>
-<p>同样，多表联查也是可以的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM IEMModels m JOIN IEMModelAlarmResult a ON m.ModelID=a.ModelID ORDER by a.ModelResultID OFFSET ((2-1)*10) ROWS FETCH next 10 rows only</span><br></pre></td></tr></table></figure></p>
-
+            <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">this.myDataSet.Tables[STDNames.TagList_String].AsEnumerable().</span><br><span class="line">                        Where(a =&gt; !a.Field&lt;bool&gt;(&quot;__Deleted&quot;))</span><br><span class="line">                        .Select(b =&gt; b.Field&lt;string&gt;(&quot;Value&quot;))</span><br><span class="line">                        .Distinct()</span><br><span class="line">                        .Count();</span><br></pre></td></tr></table></figure>
           
         
       
@@ -1555,7 +1587,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1601,7 +1633,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">67</span>
+                  <span class="site-state-item-count">87</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1651,7 +1683,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

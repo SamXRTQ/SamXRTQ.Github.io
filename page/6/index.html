@@ -261,7 +261,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/05/WebAPI自定义排序-Help-Page类和继承类属性排序/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/22/C-数字ToString/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -280,7 +280,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/06/05/WebAPI自定义排序-Help-Page类和继承类属性排序/" itemprop="url">WebAPI自定义排序-Help Page类和继承类属性排序</a></h1>
+                <a class="post-title-link" href="/2019/11/22/C-数字ToString/" itemprop="url">C#数字ToString()</a></h1>
         
 
         <div class="post-meta">
@@ -292,8 +292,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-05T11:43:00+08:00">
-                2019-06-05
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-22T10:20:49+08:00">
+                2019-11-22
               </time>
             
 
@@ -339,23 +339,13 @@
       
         
           
-            <p>在上上篇博客中，我记录了类和继承类属性输出JSON的自定义排序。在上篇博客中，我记录了控制器在Help Page的自定义排序。</p>
-<p>那么，新问题来了，就是类和继承类的属性在Help page上的排序。</p>
-<p>在Help page中，API详情页面和类的详情页面都会显示类的详情，包括名称、类型、描述等信息：</p>
-<p><img src="\images\pasted-sam-5.png" alt="upload successful"></p>
-<p>这些信息是通过ParameterDescription列表来展示出来的，关于类和继承类的顺序，这里一样默认先显示继承类的属性，再显示父类的属性。</p>
-<p>根据在上上篇设置的DataMember特性，仅对于输出JSON有效，对于这里的展示并没有效果，那么我们需要根据上篇博客对控制器排序的灵感，按照属性的DataMember特性进行排序，达到按自定义顺序展示的目的。</p>
-<p>期间我尝试了很多种办法，在前几篇博客中，我记录过关于属性特性获取的方法，是需要根据属性所属类的类型来获取的，然而Helppage显示属性列表的模板页的Model为IList &lt; ParameterDescription &gt;，并不包含类的类型信息，最后我的办法是，通过viewdata传入模板关于类的类型信息，然后调用自写的compare进行比较。</p>
-<h6 id="1-编写自定义compare方法"><a href="#1-编写自定义compare方法" class="headerlink" title="1.编写自定义compare方法"></a>1.编写自定义compare方法</h6><p>在上篇目录建立的自定义属性文件夹下，创建一个类，用来对模型的DataMember特性进行排序，我命名为ModelCompareWithDataMember.cs<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">using IEM.WebAPI.Web.Areas.HelpPage.ModelDescriptions;</span><br><span class="line">using System;</span><br><span class="line">using System.Reflection;</span><br><span class="line">using System.Runtime.Serialization;</span><br><span class="line"></span><br><span class="line">namespace IEM.WebAPI.Web.Areas.HelpPage.CustomAttribute</span><br><span class="line">&#123;</span><br><span class="line">    /// &lt;summary&gt;</span><br><span class="line">    /// 自定义属性排序，根据DataMember的Order属性</span><br><span class="line">    /// &lt;/summary&gt;</span><br><span class="line">    public class ModelCompareWithDataMember : System.Collections.Generic.IComparer&lt;ParameterDescription&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        /// &lt;summary&gt;</span><br><span class="line">        /// 属性的类的类型</span><br><span class="line">        /// &lt;/summary&gt;</span><br><span class="line">        private Type modelType;</span><br><span class="line">        public ModelCompareWithDataMember(Type _modelType)</span><br><span class="line">        &#123;</span><br><span class="line">            modelType = _modelType;</span><br><span class="line">        &#125;</span><br><span class="line">        public int Compare(ParameterDescription x, ParameterDescription y)</span><br><span class="line">        &#123;</span><br><span class="line">            //如果传入为null，直接return</span><br><span class="line">            if (modelType == null) return 0;</span><br><span class="line">            //根据类型分别获取属性</span><br><span class="line">            PropertyInfo pro1 = modelType.GetProperty(x.Name);</span><br><span class="line">            PropertyInfo pro2 = modelType.GetProperty(y.Name);</span><br><span class="line">            if (pro1 == null || pro2 == null) return 0;</span><br><span class="line"></span><br><span class="line">            object[] objList1 = pro1.GetCustomAttributes(typeof(DataMemberAttribute), true);</span><br><span class="line">            object[] objList2 = pro2.GetCustomAttributes(typeof(DataMemberAttribute), true);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            int order1 = objList1.Length == 0 ? 99 : ((DataMemberAttribute)objList1[0]).Order;</span><br><span class="line">            int order2 = objList2.Length == 0 ? 99 : ((DataMemberAttribute)objList2[0]).Order;</span><br><span class="line"></span><br><span class="line">            return order1.CompareTo(order2);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>原理是调用的时候，将属性所属类的类型传入，然后通过类获取属性的特性值。</p>
-<h6 id="2-在Parameters-cshtml中，调用排序函数"><a href="#2-在Parameters-cshtml中，调用排序函数" class="headerlink" title="2.在Parameters.cshtml中，调用排序函数"></a>2.在Parameters.cshtml中，调用排序函数</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@foreach (ParameterDescription parameter in Model.OrderBy(o =&gt; o, new ModelCompareWithDataMember((Type)(ViewBag.entityType))))</span><br><span class="line">           &#123;</span><br><span class="line">               </span><br><span class="line">               ModelDescription modelDescription = parameter.TypeDescription;</span><br><span class="line">               &lt;tr&gt;</span><br><span class="line">               ......</span><br></pre></td></tr></table></figure>
-<h6 id="3-在调用Parameters-cshtml模板的页面，通过viewdata传入类型"><a href="#3-在调用Parameters-cshtml模板的页面，通过viewdata传入类型" class="headerlink" title="3.在调用Parameters.cshtml模板的页面，通过viewdata传入类型"></a>3.在调用Parameters.cshtml模板的页面，通过viewdata传入类型</h6><p>这里我应用了两处地方，分别是API页面关于返回值的类型列表，和类的属性列表页面，如果有其他处需要排序，也可类似加上。</p>
-<p>(1).HelpPageApiModel.cshtml</p>
-<p><img src="\images\pasted-sam-9.png" alt="upload successful"></p>
-<p>(2).ComplexTypeModelDescription.cshtml</p>
-<p><img src="\images\pasted-sam-8.png" alt="upload successful"></p>
-<p>至此，大功告成。</p>
-<p>End</p>
+            <h6 id="整数前面补0"><a href="#整数前面补0" class="headerlink" title="整数前面补0"></a>整数前面补0</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">i.ToString().PadLeft(3,&apos;0&apos;);</span><br></pre></td></tr></table></figure>
+<p>3代表一共3位。</p>
+<h6 id="保留有效数字"><a href="#保留有效数字" class="headerlink" title="保留有效数字"></a>保留有效数字</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d.ToString(&quot;0.###&quot;);</span><br></pre></td></tr></table></figure>
+<p>几个井号就是保留几位</p>
+<p>0不保留   例如保留三位  98.7   而不会是98.700</p>
+<h6 id="保留小数"><a href="#保留小数" class="headerlink" title="保留小数"></a>保留小数</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d.ToString(&quot;f3&quot;);</span><br></pre></td></tr></table></figure>
+<p>0保留   例如保留三位  98.700   而不会是98.7</p>
 
           
         
@@ -404,7 +394,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/05/WebAPI自定义排序-Help-Page控制器排序/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/18/C-索引器/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -423,7 +413,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/06/05/WebAPI自定义排序-Help-Page控制器排序/" itemprop="url">WebAPI自定义排序-Help Page控制器排序</a></h1>
+                <a class="post-title-link" href="/2019/11/18/C-索引器/" itemprop="url">C#索引器</a></h1>
         
 
         <div class="post-meta">
@@ -435,8 +425,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-05T11:25:00+08:00">
-                2019-06-05
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-18T10:40:00+08:00">
+                2019-11-18
               </time>
             
 
@@ -482,18 +472,18 @@
       
         
           
-            <p>Microsoft为WEBAPI提供了默认的帮助页面，并且帮助页面也十分的简洁和美观，在帮助主页上显示了各控制器，以及控制器所属API，只不过并没有提供控制器的排序方式（也可能是我没找到）。</p>
-<p>经过摸索和思考后，我通过对控制器添加自定义特性，在显示页面按照特性排序的方法来实现自定义排序。</p>
-<p>关于特性的方法，在前面博客中介绍了，这里记录实现自定义排序的过程。</p>
-<h6 id="1-创建自定义特性"><a href="#1-创建自定义特性" class="headerlink" title="1.创建自定义特性"></a>1.创建自定义特性</h6><p>在Areas的HelpPage文件夹下创建一个文件夹，命名为CustomAttribute，用来存放自定义特性和排序方法。在此目录新建一个类，我这里命名为IEMControCustomAttribute，且只添加了一个Order属性<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">using System;</span><br><span class="line"></span><br><span class="line">namespace IEM.WebAPI.Web.Areas.HelpPage.CustomAttribute</span><br><span class="line">&#123;</span><br><span class="line">    /// &lt;summary&gt;</span><br><span class="line">    /// 自定义类特性</span><br><span class="line">    /// &lt;/summary&gt;</span><br><span class="line">    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Class, Inherited = true)]</span><br><span class="line">    public class IEMControCustomAttribute : Attribute</span><br><span class="line">    &#123;</span><br><span class="line">        public int Order &#123; get; set; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h6 id="2-给各控制器添加此特性"><a href="#2-给各控制器添加此特性" class="headerlink" title="2.给各控制器添加此特性"></a>2.给各控制器添加此特性</h6><p>这步就是给每个控制器添加新建的自定义特性，注意命名空间。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[IEMControCustom(Order = 1)]</span><br><span class="line">public class IEMAssetsController : ApiController</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h6 id="3-1-编写排序方法"><a href="#3-1-编写排序方法" class="headerlink" title="3.1 编写排序方法"></a>3.1 编写排序方法</h6><p>在命名为CustomAttribute目录，新建一个类，继承自ICompare，并实现Compare方法，这里我命名为ControllerCompare.cs<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">using System.Web.Http.Controllers;</span><br><span class="line"></span><br><span class="line">namespace IEM.WebAPI.Web.Areas.HelpPage.CustomAttribute</span><br><span class="line">&#123;</span><br><span class="line">    /// &lt;summary&gt;</span><br><span class="line">    /// 自定义Controller排序方法</span><br><span class="line">    /// &lt;/summary&gt;</span><br><span class="line">    public class ControllerCompare : System.Collections.Generic.IComparer&lt;HttpControllerDescriptor&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        public int Compare(HttpControllerDescriptor x, HttpControllerDescriptor y)</span><br><span class="line">        &#123;</span><br><span class="line">            //获取特性</span><br><span class="line">            object[] objList1 = x.ControllerType.GetCustomAttributes(typeof(IEMControCustomAttribute), true);</span><br><span class="line">            object[] objList2 = y.ControllerType.GetCustomAttributes(typeof(IEMControCustomAttribute), true);</span><br><span class="line"></span><br><span class="line">            //不存在特性的，排序默认99</span><br><span class="line">            int order1 = objList1.Length == 0 ? 99 : ((IEMControCustomAttribute)objList1[0]).Order;</span><br><span class="line">            int order2 = objList2.Length == 0 ? 99 : ((IEMControCustomAttribute)objList2[0]).Order;</span><br><span class="line"></span><br><span class="line">            return order1.CompareTo(order2);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>原：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@foreach (var group in apiGroups)</span><br><span class="line">&#123;</span><br><span class="line">    @Html.DisplayFor(m =&gt; group, &quot;ApiGroup&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>改为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@foreach (var group in apiGroups.OrderBy(n =&gt; n.Key, new ControllerCompare()))</span><br><span class="line">&#123;</span><br><span class="line">    @Html.DisplayFor(m =&gt; group, &quot;ApiGroup&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h6 id="3-2-或者直接用linq排"><a href="#3-2-或者直接用linq排" class="headerlink" title="3.2 或者直接用linq排"></a>3.2 或者直接用linq排</h6><p>在Index页面操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//对apiGroups进行排序</span><br><span class="line"></span><br><span class="line">// Group APIs by controller</span><br><span class="line">ILookup&lt;HttpControllerDescriptor, ApiDescription&gt; apiGroups = Model.ToLookup(api =&gt; api.ActionDescriptor.ControllerDescriptor);</span><br><span class="line">//根据特性对控制器排序</span><br><span class="line">var apiGroupsOrder = apiGroups.OrderBy(a =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    var att = a.Key.ControllerType.GetCustomAttributes(typeof(IEMControCustomAttribute), true);</span><br><span class="line">    return att.Length == 0 ? 99 : ((IEMControCustomAttribute)att[0]).Order;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
-<p>然后在引用位置将apiGroups改为apiGroupsOrder<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@foreach (var group in apiGroupsOrder)</span><br><span class="line">&#123;</span><br><span class="line">    @Html.DisplayFor(m =&gt; group, &quot;ApiGroup&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>注意命名空间的引用。</p>
-<p>至此完成了控制器的排序。</p>
+            <h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>在C#中，索引器允许类或结构的实例就像数组一样进行索引。</p>
+<p>这里我们引用MSDN对索引器的概述：</p>
+<ul>
+<li>使用索引器可以用类似于数组的方式为对象建立索引。</li>
+<li>get 取值函数返回值。 set 取值函数分配值。</li>
+<li>this 关键字用于定义索引器。</li>
+<li>value 关键字用于定义 set 索引器所赋的值。</li>
+<li>索引器不必根据整数值进行索引；由你决定如何定义特定的查找机制。</li>
+<li>索引器可被重载。</li>
+<li>索引器可以有多个形参，例如当访问二维数组时。</li>
+</ul>
+<h4 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h4><p>同样，这里我们直接引用MSDN提供的实例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">using System;</span><br><span class="line"></span><br><span class="line">class SampleCollection&lt;T&gt;</span><br><span class="line">&#123;</span><br><span class="line">   // Declare an array to store the data elements.</span><br><span class="line">   private T[] arr = new T[100];</span><br><span class="line"></span><br><span class="line">   // Define the indexer to allow client code to use [] notation.</span><br><span class="line">   public T this[int i]</span><br><span class="line">   &#123;</span><br><span class="line">      get &#123; return arr[i]; &#125;</span><br><span class="line">      set &#123; arr[i] = value; &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Program</span><br><span class="line">&#123;</span><br><span class="line">   static void Main()</span><br><span class="line">   &#123;</span><br><span class="line">      var stringCollection = new SampleCollection&lt;string&gt;();</span><br><span class="line">      stringCollection[0] = &quot;Hello, World&quot;;</span><br><span class="line">      Console.WriteLine(stringCollection[0]);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line">// The example displays the following output:</span><br><span class="line">//       Hello, World.</span><br></pre></td></tr></table></figure></p>
 
           
         
@@ -542,7 +532,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/05/WebAPI自定义排序-类和继承类输出JSON排序/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/18/C-扩展方法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -561,7 +551,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/06/05/WebAPI自定义排序-类和继承类输出JSON排序/" itemprop="url">WebAPI自定义排序-类和继承类输出JSON排序</a></h1>
+                <a class="post-title-link" href="/2019/11/18/C-扩展方法/" itemprop="url">C#扩展方法</a></h1>
         
 
         <div class="post-meta">
@@ -573,8 +563,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-05T11:13:00+08:00">
-                2019-06-05
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-18T10:20:00+08:00">
+                2019-11-18
               </time>
             
 
@@ -620,12 +610,16 @@
       
         
           
-            <p>在WEBAPI中，设置JSON输出后，默认输出的排序顺序是按照类的属性顺序来输出的，但是如果有继承的情况，就以子类属性顺序为先，父类属性顺序为后。</p>
-<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public class AssetNode</span><br><span class="line">   &#123;</span><br><span class="line">       public string AssetID &#123; get; set; &#125;</span><br><span class="line"></span><br><span class="line">       public string AssetPath &#123; get; set; &#125;</span><br><span class="line"></span><br><span class="line">       public string AssetType &#123; get; set; &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">    public class AssetDetails : AssetNode</span><br><span class="line">   &#123;</span><br><span class="line">       public string GraphicType &#123; get; set; &#125;</span><br><span class="line"></span><br><span class="line">       public string GraphicValue &#123; get; set; &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
-<p>如果输出AssetNode，那么输出结果是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;AssetID&quot;: &quot;sample string 1&quot;,</span><br><span class="line">  &quot;AssetPath&quot;: &quot;sample string 2&quot;,</span><br><span class="line">  &quot;AssetType&quot;: &quot;sample string 3&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>如果输出AssetDetails，那么输出结果是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;GraphicType&quot;: &quot;sample string 1&quot;,</span><br><span class="line">  &quot;GraphicValue&quot;: &quot;sample string 2&quot;,</span><br><span class="line">  &quot;AssetID&quot;: &quot;sample string 7&quot;,</span><br><span class="line">  &quot;AssetPath&quot;: &quot;sample string 8&quot;,</span><br><span class="line">  &quot;AssetType&quot;: &quot;sample string 9&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>然而我希望父类的属性在前面，子类的属性在后面，解决办法是类引用DataContract特性，并在每个属性上引用DataMember(Order = 1)特性设置Order，这样就可以按照Order的顺序输出了，需要注意的是，每个属性都要引用DataMember特性，否则就不会输出。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[DataContract]</span><br><span class="line">public class AssetNode</span><br><span class="line">&#123;</span><br><span class="line">    [DataMember(Order = 1)]</span><br><span class="line">    public string AssetID &#123; get; set; &#125;</span><br><span class="line">    [DataMember(Order = 1)]</span><br><span class="line">    public string AssetPath &#123; get; set; &#125;</span><br><span class="line">    [DataMember(Order = 1)]</span><br><span class="line">    public string AssetType &#123; get; set; &#125;</span><br><span class="line">&#125;</span><br><span class="line">[DataContract]</span><br><span class="line"> public class AssetDetails : AssetNode</span><br><span class="line">&#123;</span><br><span class="line">    [DataMember(Order = 99)]</span><br><span class="line">    public string GraphicType &#123; get; set; &#125;</span><br><span class="line">    [DataMember(Order = 99)]</span><br><span class="line">    public string GraphicValue &#123; get; set; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>End</p>
+            <h4 id="扩展方法概述"><a href="#扩展方法概述" class="headerlink" title="扩展方法概述"></a>扩展方法概述</h4><p>扩展方法是C#里非常好用的一种语法糖，其主要作用在于在类外对类进行扩展。</p>
+<p>例如基于IEnumerable实现的类，在引用Linq后，会有很多本身不存在的方法，这是在Linq中进行扩展的方法。</p>
+<h4 id="扩展方法实例"><a href="#扩展方法实例" class="headerlink" title="扩展方法实例"></a>扩展方法实例</h4><h6 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h6><p>这里示例一个IEM项目中基本的扩展方法，是对System.DateTime的扩展。</p>
+<p>在IEM项目中，DateTime的输出格式一律被要求为”yyyy-MM-dd HH:mm:ss”，所以我们在对DateTime进行Tostring的时候，总是需要输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DateTime.Now.ToString(&quot;yyyy-MM-dd HH:mm:ss&quot;)</span><br></pre></td></tr></table></figure></p>
+<p>此处，我们对System.DateTime进行一下扩展。</p>
+<h6 id="建立静态类和方法"><a href="#建立静态类和方法" class="headerlink" title="建立静态类和方法"></a>建立静态类和方法</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">/// &lt;summary&gt;</span><br><span class="line">/// 这里需要静态类</span><br><span class="line">/// &lt;/summary&gt;</span><br><span class="line">public static class DateTimeExt</span><br><span class="line">&#123;</span><br><span class="line">    /// &lt;summary&gt;</span><br><span class="line">    /// 需要静态方法</span><br><span class="line">    /// &lt;/summary&gt;</span><br><span class="line">    /// &lt;param name=&quot;time&quot;&gt;参数要以this开头&lt;/param&gt;</span><br><span class="line">    /// &lt;returns&gt;&lt;/returns&gt;</span><br><span class="line">    public static string ToIEMString(this DateTime time)</span><br><span class="line">    &#123;</span><br><span class="line">        return time.ToString(&quot;yyyy-MM-dd HH:mm:ss&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里我们对DateTime编写一个扩展方法，叫ToIEMString，直接调用这个方法就可以获取我们的默认格式。</p>
+<h6 id="调用"><a href="#调用" class="headerlink" title="调用"></a>调用</h6><p>调用方法很简单，该类型的参数可以直接调用，如同调用类中本身的方法一样。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DateTime.Now.ToIEMString()</span><br></pre></td></tr></table></figure></p>
+<p>需要注意的是，如果不在同一个命名空间下，需要进行引用。</p>
+<p>这样我们就完成了对类的一个扩展。</p>
 
           
         
@@ -674,7 +668,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/05/C-中自定义类和属性的特性，以及获取特性的值/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/12/IIS调用COM组件的权限问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -693,7 +687,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/06/05/C-中自定义类和属性的特性，以及获取特性的值/" itemprop="url">C#中自定义类和属性的特性，以及获取特性的值</a></h1>
+                <a class="post-title-link" href="/2019/11/12/IIS调用COM组件的权限问题/" itemprop="url">IIS调用COM组件的权限问题</a></h1>
         
 
         <div class="post-meta">
@@ -705,8 +699,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-05T10:51:00+08:00">
-                2019-06-05
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-12T22:15:58+08:00">
+                2019-11-12
               </time>
             
 
@@ -752,18 +746,12 @@
       
         
           
-            <p>最近做WEBAPI时，遇到类和属性需要自定义排序的需求，所以对特性进行了一些了解。</p>
-<h6 id="什么是特性"><a href="#什么是特性" class="headerlink" title="什么是特性"></a>什么是特性</h6><p>特性（attribute）是被指定给某一声明的一则附加的声明性信息。例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[DataMember(Order = 99)]</span><br><span class="line">public string GraphicType &#123; get; set; &#125;</span><br></pre></td></tr></table></figure></p>
-<p>方括号里的属性，就是特性。</p>
-<h6 id="自定义特性"><a href="#自定义特性" class="headerlink" title="自定义特性"></a>自定义特性</h6><p>自定义特性就是自己写一个特性，用以规范类和属性，加上自定义的特性内容。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">namespace IEM.WebAPI.Web.Areas.HelpPage.CustomAttribute</span><br><span class="line">&#123;</span><br><span class="line">    /// &lt;summary&gt;</span><br><span class="line">    /// 自定义类特性</span><br><span class="line">    /// &lt;/summary&gt;</span><br><span class="line">    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Class, Inherited = true)]</span><br><span class="line">    public class IEMControCustomAttribute : Attribute</span><br><span class="line">    &#123;</span><br><span class="line">        public int Order &#123; get; set; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>上面是我自定义的一个特性，用来按照自己的意愿进行排序，自定义特性需继承自Attribute类，AttributeUsage里面规范了特性，AttributeTargets.Property代表可用于属性，AttributeTargets.Class代表可用于类，Inherited代表可被继承。</p>
-<h6 id="获取特性的值"><a href="#获取特性的值" class="headerlink" title="获取特性的值"></a>获取特性的值</h6><p>获取特性的值分为获取类的特性和属性的特性。</p>
-<p>1.获取类的特性<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">IEMControCustomAttribute attr = T.GetType().GetCustomAttributes(typeof(IEMControCustomAttribute), true)[0];</span><br><span class="line">//获取特性的属性</span><br><span class="line">int order = attr.Order;</span><br></pre></td></tr></table></figure></p>
-<p>注意，上面GetCustomAttributes获取的是数组，如果你的类不含有这个特性，获取的将会是一个0长度的数组，所以使用时应注意判断不含特性的情况。</p>
-<p>2.获取属性的特性</p>
-<p>获取属性的特性需要通过类的Type，使用GetProperty获取属性，然后获取特性值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">IEMControCustomAttribute attr  = T.GetProperty(pName).GetCustomAttributes(typeof(IEMControCustomAttribute), true)[0];</span><br><span class="line">//获取特性的属性</span><br><span class="line">int order = attr.Order;</span><br></pre></td></tr></table></figure></p>
-<p>同理我们需要判断属性不存在，和特性不存在的情况。</p>
-<p>以上是获取特性的简单方法。</p>
+            <p>IIS无法访问COM组件一般是权限问题，一般按照以下步骤即可解决</p>
+<h6 id="DCOM设置"><a href="#DCOM设置" class="headerlink" title="DCOM设置"></a>DCOM设置</h6><p>运行命令dcomcnfg打开组件服务窗口。</p>
+<p>展开组件服务–&gt;计算机—&gt;我的电脑—-&gt;DCOM配置，找到相应的组件</p>
+<p>右击属性，安全标签下的三个选项都选择自定义，然后编辑，分别添加NETWORK SERVICE用户。</p>
+<p>然后在点击标识标签，选择交互式用户</p>
+<h6 id="IIS应用程序池设置"><a href="#IIS应用程序池设置" class="headerlink" title="IIS应用程序池设置"></a>IIS应用程序池设置</h6><p>打开应用程序池高级设置，将标识选项修改为LocalSystem，如果还是不行，就改为自定义输入管理员账户密码。</p>
 
           
         
@@ -812,7 +800,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/03/WebAPI跨域设置/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/12/WEBAPI-POST-FromBody-后台无法接收参数的问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -831,7 +819,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/06/03/WebAPI跨域设置/" itemprop="url">WebAPI跨域设置</a></h1>
+                <a class="post-title-link" href="/2019/11/12/WEBAPI-POST-FromBody-后台无法接收参数的问题/" itemprop="url">WEBAPI POST [FromBody] 后台无法接收参数的问题</a></h1>
         
 
         <div class="post-meta">
@@ -843,8 +831,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-03T11:48:00+08:00">
-                2019-06-03
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-12T21:52:03+08:00">
+                2019-11-12
               </time>
             
 
@@ -890,11 +878,25 @@
       
         
           
-            <p>在网页使用ajax异步调用的过程中，会有一个跨域的情况出现，简单说就是不同的网站进行异步一般是不可以的。<br>在WebAPI中如此设置跨域。</p>
-<p>1.Nuget搜索并安装microsoft.aspnet.webapi.cors</p>
-<p>2.web.config appSettings添加如下配置(这里默认全部允许，如果自定义多个网址用半角逗号隔开)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;add key=&quot;cors_allowOrigins&quot; value=&quot;*&quot;/&gt;</span><br><span class="line">&lt;add key=&quot;cors_allowHeaders&quot; value=&quot;*&quot;/&gt;</span><br><span class="line">&lt;add key=&quot;cors_allowMethods&quot; value=&quot;*&quot;/&gt;</span><br></pre></td></tr></table></figure></p>
-<p>3.WebAPIConfig.cs  Register函数中添加如下设置代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var allowOrigins = ConfigurationManager.AppSettings[&quot;cors_allowOrigins&quot;];</span><br><span class="line">var allowHeaders = ConfigurationManager.AppSettings[&quot;cors_allowHeaders&quot;];</span><br><span class="line">var allowMethods = ConfigurationManager.AppSettings[&quot;cors_allowMethods&quot;];</span><br><span class="line">var globalCors = new EnableCorsAttribute(allowOrigins, allowHeaders, allowMethods);</span><br><span class="line">config.EnableCors(globalCors);</span><br></pre></td></tr></table></figure></p>
-<p>4.大功告成</p>
+            <p>在WEBAPI（MVC）中，POST方法碰到后台无法接收参数的问题，现将此问题记录。</p>
+<h3 id="Ajax传Json对象时"><a href="#Ajax传Json对象时" class="headerlink" title="Ajax传Json对象时"></a>Ajax传Json对象时</h3><p>前台代码先看<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">var dataStr = $(&quot;#tbDatax&quot;).val();</span><br><span class="line">//将字符串转化为JSON格式</span><br><span class="line">var data = $.parseJSON(dataStr);</span><br><span class="line">$.ajax(&#123;</span><br><span class="line">    type: $(&quot;#type&quot;).val(),</span><br><span class="line">    url: $(&quot;#tbUrl&quot;).val(),</span><br><span class="line">    data: data,</span><br><span class="line">    dataType: &quot;json&quot;,</span><br><span class="line">    traditional: true,</span><br><span class="line">    success: function (data1) &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;,</span><br><span class="line">    error: function (err) &#123;</span><br><span class="line">        alert(err.status);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>如上代码所示，这种方法直接传递Json对象，在这种情况下，后台获取不到参数的情况有以下几种：</p>
+<h6 id="传递简单类型"><a href="#传递简单类型" class="headerlink" title="传递简单类型"></a>传递简单类型</h6><p>假设后台的FromBody参数为简单类型（string,int,string[]）等，如下代码所示<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[HttpPost]</span><br><span class="line">[Route(&quot;Test&quot;)]</span><br><span class="line">public IHttpActionResult Test([FromBody]string str)</span><br><span class="line">&#123;</span><br><span class="line">    throw new Exception();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>经测试，全部无法获取。</p>
+<p>解决方案：将简单类型封装成类，然后用类操作。</p>
+<h6 id="模型属性无访问修饰"><a href="#模型属性无访问修饰" class="headerlink" title="模型属性无访问修饰"></a>模型属性无访问修饰</h6><p>先看代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">    [HttpPost]</span><br><span class="line">    [Route(&quot;Test&quot;)]</span><br><span class="line">    public IHttpActionResult Test([FromBody]TestModel model)</span><br><span class="line">    &#123;</span><br><span class="line">        throw new Exception();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    //下面是类</span><br><span class="line">public class TestModel</span><br><span class="line">&#123;</span><br><span class="line">    public string str;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>经测试，无法获取。</p>
+<p>解决方案：TestModel类的属性，增加修饰符<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public class TestModel</span><br><span class="line">&#123;</span><br><span class="line">    //增加get,set修饰符</span><br><span class="line">    public string str &#123; get; set; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h6 id="模型属性为自定义类"><a href="#模型属性为自定义类" class="headerlink" title="模型属性为自定义类"></a>模型属性为自定义类</h6><p>且看模型定义代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class TestModel</span><br><span class="line">&#123;</span><br><span class="line">    public string str &#123; get; set; &#125;</span><br><span class="line">    //属性非简单类型，而是一个自定义类</span><br><span class="line">    public ChildModel childModel &#123; get; set; &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class ChildModel</span><br><span class="line">&#123;</span><br><span class="line">    public string strChild &#123; get; set; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>经测试，childModel的strChild属性无法获得。</p>
+<p>解决方案：目前我不会解决。</p>
+<p>由上得出结论，传递对象不仅麻烦，关键是有无法解决的问题，所以就需要找其他方法。那么问题来了，找什么方法呢？经过调研，传字符串，并设置ContentType可以有效解决以上问题。具体原因就不表了，跟Jq定义有关。</p>
+<h3 id="传递字符串，并设置ContentType"><a href="#传递字符串，并设置ContentType" class="headerlink" title="传递字符串，并设置ContentType"></a>传递字符串，并设置ContentType</h3><p>前台代码一览<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">var dataStr = $(&quot;#tbDatax&quot;).val();</span><br><span class="line">$.ajax(&#123;</span><br><span class="line">    type: $(&quot;#type&quot;).val(),</span><br><span class="line">    url: $(&quot;#tbUrl&quot;).val(),</span><br><span class="line">    data: dataStr,</span><br><span class="line">    //注意此处设置contentType</span><br><span class="line">    contentType: &quot;application/json;charset=UTF-8&quot;,</span><br><span class="line">    traditional: true,</span><br><span class="line">    success: function (data1) &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;,</span><br><span class="line">    error: function (err) &#123;</span><br><span class="line">        alert(err.status);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>如上代码所示，设置contentType，然后传递字符串。</p>
+<p>简单类型可以传递了(string记得加上双引号)。</p>
+<p>后台模型属性没有定义访问修饰符也可以解析了。</p>
+<p>模型属性为自定义类也可以解析了。</p>
+<p>世界忽然安静了，也不那么烦躁了，你说气人不？</p>
 
           
         
@@ -943,7 +945,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/03/WebAPI中多个项目引用导致Help-Page不显示描述问题解决/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/08/Winform集成DLL到exe中/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -962,7 +964,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/06/03/WebAPI中多个项目引用导致Help-Page不显示描述问题解决/" itemprop="url">WebAPI中多个项目引用导致Help Page不显示描述问题解决</a></h1>
+                <a class="post-title-link" href="/2019/11/08/Winform集成DLL到exe中/" itemprop="url">Winform集成DLL到exe中</a></h1>
         
 
         <div class="post-meta">
@@ -974,8 +976,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-03T09:34:00+08:00">
-                2019-06-03
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-08T17:54:04+08:00">
+                2019-11-08
               </time>
             
 
@@ -1021,16 +1023,16 @@
       
         
           
-            <p>做WEBAPI时，微软提供了帮助页面，在类和属性中写好注释后，帮助页面会显示相应的注释描述。（具体方法大致是勾选生成XML，HelpPage页面配置中加载那个xml）<br>后来因为我的项目庞大，我将其拆分为几个项目层，这样问题就出现了，只显示web层的描述，因为其他项目层的XML文件并没有复制并加载到当前Help Page中，在不断的查询资料后，在 <a href="https://stackoverflow.com/questions/21895257/how-can-xml-documentation-for-web-api-include-documentation-from-beyond-the-main" target="_blank" rel="noopener">stackflow</a> 中找到了解决方案。</p>
-<h6 id="解决方案如下"><a href="#解决方案如下" class="headerlink" title="解决方案如下"></a>解决方案如下</h6><p>1.在主项目层中新建文件夹，我命名为HelpRes。</p>
-<p>2.类库项目层(我的项目中叫viewModels)勾选生成xml，路径写到主项目层的HelpRes文件夹下：</p>
-<p><img src="\images\pasted-sam-2.png" alt="upload successful"></p>
-<p>3.主项目层中找到HelpRes下的这个xml，并包括在项目中，将其复制属性设置为：  如果较新则复制</p>
-<p>4.主项目层项目属性也勾选生成xml文件，路径为生成目录的HelpRes文件夹，同理包括在项目中，更改复制属性。</p>
-<p><img src="\images\pasted-sam-4.png" alt="upload successful"></p>
-<p>5.主项目层的HelpPage文件夹下的Models文件夹下，新增如下类MultiXmlDocumentationProvider.cs（注意命名空间）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line">using System;</span><br><span class="line">using System.Linq;</span><br><span class="line">using System.Reflection;</span><br><span class="line">using System.Web.Http.Controllers;</span><br><span class="line">using System.Web.Http.Description;</span><br><span class="line">using IEM.WebAPI.Web.Areas.HelpPage.ModelDescriptions;</span><br><span class="line"></span><br><span class="line">namespace IEM.WebAPI.Web.Areas.HelpPage.Models</span><br><span class="line">&#123;</span><br><span class="line">    /// &lt;summary&gt;A custom </span><br><span class="line">    /// &lt;see cref=&quot;IDocumentationProvider&quot;/&gt; </span><br><span class="line">    /// that reads the API documentation from a collection of XML documentation files.</span><br><span class="line">    /// &lt;/summary&gt;</span><br><span class="line">    public class MultiXmlDocumentationProvider : IDocumentationProvider, IModelDocumentationProvider</span><br><span class="line">    &#123;</span><br><span class="line">        /*********</span><br><span class="line">    ** Properties </span><br><span class="line">    *********/</span><br><span class="line">        /// &lt;summary&gt;The internal documentation providers for specific files.&lt;/summary&gt;</span><br><span class="line">        private readonly XmlDocumentationProvider[] Providers;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        /*********</span><br><span class="line">        ** Public methods</span><br><span class="line">        *********/</span><br><span class="line">        /// &lt;summary&gt;Construct an instance.&lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;paths&quot;&gt;The physical paths to the XML documents.&lt;/param&gt;</span><br><span class="line">        public MultiXmlDocumentationProvider(params string[] paths)</span><br><span class="line">        &#123;</span><br><span class="line">            this.Providers = paths.Select(p =&gt; new XmlDocumentationProvider(p)).ToArray();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;Gets the documentation for a subject.&lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;subject&quot;&gt;The subject to document.&lt;/param&gt;</span><br><span class="line">        public string GetDocumentation(MemberInfo subject)</span><br><span class="line">        &#123;</span><br><span class="line">            return this.GetFirstMatch(p =&gt; p.GetDocumentation(subject));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;Gets the documentation for a subject.&lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;subject&quot;&gt;The subject to document.&lt;/param&gt;</span><br><span class="line">        public string GetDocumentation(Type subject)</span><br><span class="line">        &#123;</span><br><span class="line">            return this.GetFirstMatch(p =&gt; p.GetDocumentation(subject));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;Gets the documentation for a subject.&lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;subject&quot;&gt;The subject to document.&lt;/param&gt;</span><br><span class="line">        public string GetDocumentation(HttpControllerDescriptor subject)</span><br><span class="line">        &#123;</span><br><span class="line">            return this.GetFirstMatch(p =&gt; p.GetDocumentation(subject));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;Gets the documentation for a subject.&lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;subject&quot;&gt;The subject to document.&lt;/param&gt;</span><br><span class="line">        public string GetDocumentation(HttpActionDescriptor subject)</span><br><span class="line">        &#123;</span><br><span class="line">            return this.GetFirstMatch(p =&gt; p.GetDocumentation(subject));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;Gets the documentation for a subject.&lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;subject&quot;&gt;The subject to document.&lt;/param&gt;</span><br><span class="line">        public string GetDocumentation(HttpParameterDescriptor subject)</span><br><span class="line">        &#123;</span><br><span class="line">            return this.GetFirstMatch(p =&gt; p.GetDocumentation(subject));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;Gets the documentation for a subject.&lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;subject&quot;&gt;The subject to document.&lt;/param&gt;</span><br><span class="line">        public string GetResponseDocumentation(HttpActionDescriptor subject)</span><br><span class="line">        &#123;</span><br><span class="line">            return this.GetFirstMatch(p =&gt; p.GetDocumentation(subject));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        /*********</span><br><span class="line">        ** Private methods</span><br><span class="line">        *********/</span><br><span class="line">        /// &lt;summary&gt;Get the first valid result from the collection of XML documentation providers.&lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;expr&quot;&gt;The method to invoke.&lt;/param&gt;</span><br><span class="line">        private string GetFirstMatch(Func&lt;XmlDocumentationProvider, string&gt; expr)</span><br><span class="line">        &#123;</span><br><span class="line">            return this.Providers</span><br><span class="line">                .Select(expr)</span><br><span class="line">                .FirstOrDefault(p =&gt; !String.IsNullOrWhiteSpace(p));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>6.在HelpPage的App_Start下的HelpPageConfig.cs中，增加如下配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">config.SetDocumentationProvider(new Models.MultiXmlDocumentationProvider(</span><br><span class="line">    HttpContext.Current.Server.MapPath(&quot;~/bin/HelpRes/IEM.WebAPIHelp.XML&quot;),</span><br><span class="line">    HttpContext.Current.Server.MapPath(&quot;~/bin/HelpRes/IEM.WebAPIHelp_ViewModel.XML&quot;))</span><br><span class="line">    );</span><br></pre></td></tr></table></figure></p>
-<p>如此生成后，即可发现，可完美显示viewmodel项目层的描述了。如果需要添加其他项目层，方法一样，都把xml生成路径写到主项目层的HelpRes文件夹下后，引用即可。</p>
+            <p>在Winform中，有时会用到一些动态链接库（DLL）。有时由于是小工具，为了方便，想将这些DLL集成到EXE中。</p>
+<p>原理简单的说，就是将DLL嵌入到资源中，然后引用DLL时禁止复制到本地，然后绑定AssemblyResolve事件，这样程序在找不到程序集的时候就会触发事件，根据代码从资源中动态调用。</p>
+<p>需要注意的是，如果是在windows service中，不仅要在program中添加事件，在projectInstaller中也要添加事件。</p>
+<p>具体步骤如下</p>
+<h6 id="项目中添加一个文件夹，将DLL都放到这个文件夹里。"><a href="#项目中添加一个文件夹，将DLL都放到这个文件夹里。" class="headerlink" title="项目中添加一个文件夹，将DLL都放到这个文件夹里。"></a>项目中添加一个文件夹，将DLL都放到这个文件夹里。</h6><p><img src="\images\pasted-sam-101.png" alt="upload successful"></p>
+<p>这里文件夹我起名叫Lib</p>
+<h6 id="设置这些DLL的生成操作属性为嵌入的资源。"><a href="#设置这些DLL的生成操作属性为嵌入的资源。" class="headerlink" title="设置这些DLL的生成操作属性为嵌入的资源。"></a>设置这些DLL的生成操作属性为嵌入的资源。</h6><p><img src="\images\pasted-sam-104.png" alt="upload successful"></p>
+<h6 id="引用这些DLL，并在引用里设置复制到本地属性为False。"><a href="#引用这些DLL，并在引用里设置复制到本地属性为False。" class="headerlink" title="引用这些DLL，并在引用里设置复制到本地属性为False。"></a>引用这些DLL，并在引用里设置复制到本地属性为False。</h6><p><img src="\images\pasted-sam-105.png" alt="upload successful"></p>
+<h6 id="在Program-cs中添加AssemblyResolve事件。"><a href="#在Program-cs中添加AssemblyResolve事件。" class="headerlink" title="在Program.cs中添加AssemblyResolve事件。"></a>在Program.cs中添加AssemblyResolve事件。</h6><p>编写CurrentDomain_AssemblyResolve函数，并在Main()方法里，绑定事件。</p>
+<p>注意在事件中，设置resourceName时，文件夹要写为放DLL的文件夹，这里我是Lib文件夹。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">static class Program</span><br><span class="line">&#123;</span><br><span class="line">    /// &lt;summary&gt;</span><br><span class="line">    /// 应用程序的主入口点。</span><br><span class="line">    /// &lt;/summary&gt;</span><br><span class="line">    [STAThread]</span><br><span class="line">    static void Main()</span><br><span class="line">    &#123;</span><br><span class="line">        //增加AssemblyResolve事件</span><br><span class="line">        AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;</span><br><span class="line">        Application.EnableVisualStyles();</span><br><span class="line">        Application.SetCompatibleTextRenderingDefault(false);</span><br><span class="line">        Application.Run(new Form1());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /// &lt;summary&gt;</span><br><span class="line">    /// AssemblyResolve事件</span><br><span class="line">    /// &lt;/summary&gt;</span><br><span class="line">    /// &lt;param name=&quot;sender&quot;&gt;&lt;/param&gt;</span><br><span class="line">    /// &lt;param name=&quot;args&quot;&gt;&lt;/param&gt;</span><br><span class="line">    /// &lt;returns&gt;&lt;/returns&gt;</span><br><span class="line">    static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)</span><br><span class="line">    &#123;</span><br><span class="line">        String resourceName = System.Reflection.MethodBase.GetCurrentMethod().ReflectedType.Namespace + &quot;.Lib.&quot; + new AssemblyName(args.Name).Name + &quot;.dll&quot;;</span><br><span class="line">        using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))</span><br><span class="line">        &#123;</span><br><span class="line">            Byte[] assemblyData = new Byte[stream.Length];</span><br><span class="line">            stream.Read(assemblyData, 0, assemblyData.Length);</span><br><span class="line">            return Assembly.Load(assemblyData);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 
           
         
@@ -1079,7 +1081,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/31/WebAPI中因循环导致Help-Page示例报错问题/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/24/使用Serv-U搭建FTP-SFTP等服务器/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -1098,7 +1100,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/05/31/WebAPI中因循环导致Help-Page示例报错问题/" itemprop="url">WebAPI中因循环导致Help Page示例报错问题</a></h1>
+                <a class="post-title-link" href="/2019/10/24/使用Serv-U搭建FTP-SFTP等服务器/" itemprop="url">使用Serv-U搭建FTP-SFTP等服务器</a></h1>
         
 
         <div class="post-meta">
@@ -1110,8 +1112,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-31T17:54:00+08:00">
-                2019-05-31
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-24T16:51:42+08:00">
+                2019-10-24
               </time>
             
 
@@ -1157,135 +1159,11 @@
       
         
           
-            <p>在WEBAPI中，因为类的属性是树形属性，含有递归情况，所以Help Page在现实Sample时会报错：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">An exception has occurred while using the formatter &apos;JsonMediaTypeFormatter&apos; to generate sample for media type &apos;application/json&apos;. Exception message: Self referencing loop detected with type &apos;IEM.WebAPI.ViewModel.ViewModels.Actors.IEMActorNodeWithTree&apos;. Path &apos;ChildNodes&apos;.</span><br></pre></td></tr></table></figure></p>
-<h6 id="解决方案：在WebApiConfig-cs中添加如下代码："><a href="#解决方案：在WebApiConfig-cs中添加如下代码：" class="headerlink" title="解决方案：在WebApiConfig.cs中添加如下代码："></a>解决方案：在WebApiConfig.cs中添加如下代码：</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/28/EF中基类添加默认值的方法/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Sam">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="燕师傅">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/05/28/EF中基类添加默认值的方法/" itemprop="url">EF中基类添加默认值的方法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-28T17:07:00+08:00">
-                2019-05-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-    
-    
-
-   
-
-    
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在EF中，有时所有的库均有相同的字段，例如CreateTime，LastModifyTime等，需要在创建时填入创建时间，修改时填入修改时间，基于这种需求，采用以下方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public bool Insert(TEntity entity)</span><br><span class="line">&#123;</span><br><span class="line">    //添加插入时的默认值</span><br><span class="line">    PropertyInfo[] propertys = entity.GetType().GetProperties();</span><br><span class="line">    PropertyInfo pi = propertys.FirstOrDefault(t=&gt;t.Name.ToLower()==&quot;createtime&quot;);</span><br><span class="line">    if (pi != null) pi.SetValue(entity, DateTime.Now);</span><br><span class="line"></span><br><span class="line">    dbContext.Entry&lt;TEntity&gt;(entity).State = EntityState.Added;</span><br><span class="line">    return dbContext.SaveChanges() &gt; 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这样，就可以把相应的时间统一写入了。修改时间等同理。</p>
+            <p>1.打开Serv-U</p>
+<p>2.点击导航旁边的+按钮，新建域</p>
+<p>3.依次输入名称、描述—-域类型—-根目录—-FTP/SFTP/HTTP等是否启用及端口号—–IP地址，即可部署成功。</p>
+<p><img src="\images\pasted-sam-100.png" alt="upload successful"></p>
+<p>需要注意的是Serv-U的注册码输入地址是在以下地址输入的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">全局---服务器详细信息---许可证信息---输入授权ID</span><br></pre></td></tr></table></figure></p>
 
           
         
@@ -1334,7 +1212,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/28/EntityFramework-EF框架-入门实例/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/23/Windows-Server-2016-安装IIS报错/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -1353,7 +1231,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/05/28/EntityFramework-EF框架-入门实例/" itemprop="url">EntityFramework(EF框架)入门实例</a></h1>
+                <a class="post-title-link" href="/2019/10/23/Windows-Server-2016-安装IIS报错/" itemprop="url">Windows Server 2016 安装IIS报错</a></h1>
         
 
         <div class="post-meta">
@@ -1365,8 +1243,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-28T16:13:00+08:00">
-                2019-05-28
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-23T20:53:39+08:00">
+                2019-10-23
               </time>
             
 
@@ -1412,36 +1290,9 @@
       
         
           
-            <h4 id="什么是EntityFramework-EF框架"><a href="#什么是EntityFramework-EF框架" class="headerlink" title="什么是EntityFramework(EF框架)"></a>什么是EntityFramework(EF框架)</h4><p>微软自己出的ORM框架，具体不说了，百度。</p>
-<h4 id="EF的优势"><a href="#EF的优势" class="headerlink" title="EF的优势"></a>EF的优势</h4><p>不用写传统SQL，不用写各种ado，不用来回操作datatable，简单而言，就是便于开发，便于维护。</p>
-<h4 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h4><p>下面将从建项目开始，一步步操作，生成通用仓储类，以及简单测试。</p>
-<h5 id="一、新建项目"><a href="#一、新建项目" class="headerlink" title="一、新建项目"></a>一、新建项目</h5><p> 1.新建项目及解决方案，这里我起名叫EFTestDemo</p>
-<p> 2.在此解决方案上，新建一个项目，这里我起名叫Entity，这个项目的主要作用是，存放EF的实体类，和默认上下文。</p>
-<p> 3.在此解决方案上，新建一个项目，这里我起名叫IRepository，这个项目的主要作用是，定义仓储基类以及各操作类的接口。</p>
-<p> 4.在此解决方案上，新建一个项目，这里我起名叫Repository，这个项目的主要作用当然是实现上面那个项目定义的接口了。</p>
-<p>至此，基本的项目就建立完毕了。</p>
-<h5 id="二、安装EntityFramework"><a href="#二、安装EntityFramework" class="headerlink" title="二、安装EntityFramework"></a>二、安装EntityFramework</h5><pre><code>分别在EFTestDemo、Entity、Repository三个项目中，使用NuGet安装EntityFramework.
-</code></pre><h5 id="三、创建实例和上下文"><a href="#三、创建实例和上下文" class="headerlink" title="三、创建实例和上下文"></a>三、创建实例和上下文</h5><p>此操作在Entity项目上进行。此类需要安装EF。</p>
-<p>1.右击Entity项目–添加–新建项，选择Data标签下的 ADO.NET 实体数据模型，这里名称我填写的是EFDB。将会弹出模型向导，这里涉及到一个Code First和Database First的模式，这里我选择的是来自数据库的Code First（或者选择来自数据库的EF设计器，也就是Database First）。</p>
-<p>简单的说，这两种模式的区别在于database first模式包含模型设计器，而且可以更新模型，缺点是冗余。Code first优势在于自由，轻量，甚至可以根据code而更改数据库结构（对于我的项目而言，此操作会造成麻烦）。</p>
-<p>2.根据提示选择数据库，如果没有连接需要新建一个数据库连接，然后勾选表结构，然后将会自动生成相应的实例类和上下文。</p>
-<p>此处我的测试库有3个表，所以自动生成了以下4个类。</p>
-<p><img src="\images\pasted-sam-1.png" alt="upload successful"></p>
-<p>EFDB是默认上下文，其他三个类分别代表了3个实体。</p>
-<p>至此，Entity项目的操作就完成了，需要注意的是，因为这里我是多个项目，所以需要把app.config的连接(connectionStrings)复制到主项目的app.config里。</p>
-<h5 id="四、编写接口"><a href="#四、编写接口" class="headerlink" title="四、编写接口"></a>四、编写接口</h5><p>此操作在IRepository项目上进行。<br>1.新建仓储接口，这里我命名为IBaseRepository，源码如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">using System;</span><br><span class="line">using System.Collections.Generic;</span><br><span class="line">using System.Data.Common;</span><br><span class="line">using System.Linq;</span><br><span class="line">using System.Linq.Expressions;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace IRepository</span><br><span class="line">&#123;</span><br><span class="line">    public interface IBaseRepository&lt;TEntity&gt; where TEntity : class</span><br><span class="line">    &#123;</span><br><span class="line">        bool Insert(TEntity entity);</span><br><span class="line">        bool Update(TEntity entity);</span><br><span class="line">        bool Delete(TEntity entity);</span><br><span class="line"></span><br><span class="line">        TEntity FindEntity(object key);</span><br><span class="line">        TEntity FindEntity(Expression&lt;Func&lt;TEntity, bool&gt;&gt; predicate);</span><br><span class="line"></span><br><span class="line">        IQueryable&lt;TEntity&gt; IQueryable();</span><br><span class="line">        IQueryable&lt;TEntity&gt; IQueryable(Expression&lt;Func&lt;TEntity, bool&gt;&gt; predicate);</span><br><span class="line"></span><br><span class="line">        List&lt;TEntity&gt; FindList(string strSql);</span><br><span class="line">        List&lt;TEntity&gt; FindList(string strSql, DbParameter[] dbParameter);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>分别定义了 插入、更新、删除、获取单个实体(按主键)、获取单个实体(按表达式)、获取Iqueryable、获取Iqueryable(按表达式)、按sql获取列表，按sql+参数获取列表。此处并不难理解。</p>
-<p>2.新建用户类接口，这里我命名为IUserRepository，继承自上面的基类仓储接口。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">namespace IRepository</span><br><span class="line">&#123;</span><br><span class="line">    public interface IUserRepository : IBaseRepository&lt;Entity.EFUsers&gt;</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>3.同理定义其他两个实体操作类接口，这里我并没有做。</p>
-<p>至此，IRepository上面的操作就完成了。</p>
-<h5 id="五、根据接口实现"><a href="#五、根据接口实现" class="headerlink" title="五、根据接口实现"></a>五、根据接口实现</h5><p>此操作在Repository项目上进行。此项目需要安装EF，并需要引用IRepository和Entity。</p>
-<p>1.新建一个类，作为仓储基类，用来实现IBaseRepository接口，这里我命名为BaseRespository，此类需集成自接口，源码如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><span class="line">using System;</span><br><span class="line">using System.Collections.Generic;</span><br><span class="line">using System.Data.Common;</span><br><span class="line">using System.Linq;</span><br><span class="line">using System.Linq.Expressions;</span><br><span class="line">using System.Text;</span><br><span class="line"></span><br><span class="line">using System.Data.Entity;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace Repository</span><br><span class="line">&#123;</span><br><span class="line">    public class BaseRespository&lt;TEntity&gt; : IRepository.IBaseRepository&lt;TEntity&gt; where TEntity : class</span><br><span class="line">    &#123;</span><br><span class="line">        Entity.EFDB dbContext;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;</span><br><span class="line">        /// 构造函数，生成上下文</span><br><span class="line">        /// &lt;/summary&gt;</span><br><span class="line">        public BaseRespository()</span><br><span class="line">        &#123;</span><br><span class="line">        //这里如需要自定义连接串，需在EFDB类中添加重载的构造函数，然后此处自定义字符串传入。</span><br><span class="line">        </span><br><span class="line">            this.dbContext = new Entity.EFDB();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;</span><br><span class="line">        /// 插入</span><br><span class="line">        /// &lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;entity&quot;&gt;&lt;/param&gt;</span><br><span class="line">        /// &lt;returns&gt;&lt;/returns&gt;</span><br><span class="line">        public bool Insert(TEntity entity)</span><br><span class="line">        &#123;</span><br><span class="line"></span><br><span class="line">            dbContext.Entry&lt;TEntity&gt;(entity).State = EntityState.Added;</span><br><span class="line">            return dbContext.SaveChanges() &gt; 0;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;</span><br><span class="line">        /// 更新</span><br><span class="line">        /// &lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;entity&quot;&gt;&lt;/param&gt;</span><br><span class="line">        /// &lt;returns&gt;&lt;/returns&gt;</span><br><span class="line">        public bool Update(TEntity entity)</span><br><span class="line">        &#123;</span><br><span class="line">            if (dbContext.Entry&lt;TEntity&gt;(entity).State != EntityState.Detached)</span><br><span class="line">            &#123;</span><br><span class="line">                dbContext.Set&lt;TEntity&gt;().Attach(entity);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            dbContext.Entry&lt;TEntity&gt;(entity).State = EntityState.Modified;</span><br><span class="line">            return dbContext.SaveChanges() &gt; 0;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;</span><br><span class="line">        /// 删除</span><br><span class="line">        /// &lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;entity&quot;&gt;&lt;/param&gt;</span><br><span class="line">        /// &lt;returns&gt;&lt;/returns&gt;</span><br><span class="line">        public bool Delete(TEntity entity)</span><br><span class="line">        &#123;</span><br><span class="line">            if (dbContext.Entry&lt;TEntity&gt;(entity).State != EntityState.Detached)</span><br><span class="line">            &#123;</span><br><span class="line">                dbContext.Set&lt;TEntity&gt;().Attach(entity);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            dbContext.Entry&lt;TEntity&gt;(entity).State = EntityState.Deleted;</span><br><span class="line">            return dbContext.SaveChanges() &gt; 0;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;</span><br><span class="line">        /// 获取单个实体</span><br><span class="line">        /// &lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;key&quot;&gt;&lt;/param&gt;</span><br><span class="line">        /// &lt;returns&gt;&lt;/returns&gt;</span><br><span class="line">        public TEntity FindEntity(object key)</span><br><span class="line">        &#123;</span><br><span class="line">            return dbContext.Set&lt;TEntity&gt;().Find(key);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;</span><br><span class="line">        /// 获取单个实体</span><br><span class="line">        /// &lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;predicate&quot;&gt;&lt;/param&gt;</span><br><span class="line">        /// &lt;returns&gt;&lt;/returns&gt;</span><br><span class="line">        public TEntity FindEntity(Expression&lt;Func&lt;TEntity, bool&gt;&gt; predicate)</span><br><span class="line">        &#123;</span><br><span class="line">            return dbContext.Set&lt;TEntity&gt;().FirstOrDefault(predicate);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;</span><br><span class="line">        /// 获取iqueryable</span><br><span class="line">        /// &lt;/summary&gt;</span><br><span class="line">        /// &lt;returns&gt;&lt;/returns&gt;</span><br><span class="line">        public IQueryable&lt;TEntity&gt; IQueryable()</span><br><span class="line">        &#123;</span><br><span class="line">            return dbContext.Set&lt;TEntity&gt;();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;</span><br><span class="line">        /// 获取iqueryable</span><br><span class="line">        /// &lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;predicate&quot;&gt;&lt;/param&gt;</span><br><span class="line">        /// &lt;returns&gt;&lt;/returns&gt;</span><br><span class="line">        public IQueryable&lt;TEntity&gt; IQueryable(Expression&lt;Func&lt;TEntity, bool&gt;&gt; predicate)</span><br><span class="line">        &#123;</span><br><span class="line">            return dbContext.Set&lt;TEntity&gt;().Where(predicate);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;</span><br><span class="line">        /// 根据sql语句获取实体</span><br><span class="line">        /// &lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;strSql&quot;&gt;&lt;/param&gt;</span><br><span class="line">        /// &lt;returns&gt;&lt;/returns&gt;</span><br><span class="line">        public List&lt;TEntity&gt; FindList(string sqlStr)</span><br><span class="line">        &#123;</span><br><span class="line">            return dbContext.Database.SqlQuery&lt;TEntity&gt;(sqlStr).ToList();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /// &lt;summary&gt;</span><br><span class="line">        /// 根据sql语句获取实体</span><br><span class="line">        /// &lt;/summary&gt;</span><br><span class="line">        /// &lt;param name=&quot;sqlStr&quot;&gt;&lt;/param&gt;</span><br><span class="line">        /// &lt;param name=&quot;dbParameter&quot;&gt;&lt;/param&gt;</span><br><span class="line">        /// &lt;returns&gt;&lt;/returns&gt;</span><br><span class="line">        public List&lt;TEntity&gt; FindList(string sqlStr, DbParameter[] dbParameter)</span><br><span class="line">        &#123;</span><br><span class="line">            return dbContext.Database.SqlQuery&lt;TEntity&gt;(sqlStr, dbParameter).ToList();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>里面每个函数都写了说明。</p>
-<p>2.新建一个类，用来实现用户仓储操作实体类，用来实现IUserRepository，这里我命名为UserRepository，此类需继承自接口，以及仓储基类。源码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">namespace Repository</span><br><span class="line">&#123;</span><br><span class="line">    public class UserRepository : BaseRespository&lt;Entity.EFUsers&gt;, IRepository.IUserRepository</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>3.同理建立其他两个实体仓储操作实体类，这里我并没有做。</p>
-<p>至此，有关EF的基类、操作类等一切已妥当，我们可以开始测试了。</p>
-<h5 id="六、调用测试"><a href="#六、调用测试" class="headerlink" title="六、调用测试"></a>六、调用测试</h5><p>主项目需安装EF，并需引用除接口项目的其他2个项目。<br>在主项目(EFTestDemo)中，新建一个方法，写如下函数，并调用，查看效果。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">Repository.UserRepository userP = new Repository.UserRepository();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//添加</span><br><span class="line">Entity.EFUsers user = new Entity.EFUsers() &#123; UserName = &quot;cc&quot;, UserDes = &quot;dd3344&quot;, UserRole = 3 &#125;;</span><br><span class="line">userP.Insert(user);</span><br><span class="line"></span><br><span class="line">//查找</span><br><span class="line">////Entity.EFUsers userF = userP.FindEntity(3);</span><br><span class="line"></span><br><span class="line">//更新</span><br><span class="line">//userF.UserName = &quot;mmm&quot;;</span><br><span class="line">//userP.Update(userF);</span><br><span class="line"></span><br><span class="line">//删除</span><br><span class="line">//userP.Delete(userF);</span><br><span class="line"></span><br><span class="line">//按条件查找第一个</span><br><span class="line">////userF = userP.FindEntity(t =&gt; t.UserName == &quot;mmm&quot;);</span><br><span class="line"></span><br><span class="line">//iqueryable</span><br><span class="line">////IQueryable&lt;Entity.EFUsers&gt; iq = userP.IQueryable(t =&gt; t.UserDes == &quot;dd&quot;);</span><br><span class="line">//获取数量</span><br><span class="line">////int count = iq.Count();</span><br><span class="line">//获取实体列表</span><br><span class="line">////List&lt;Entity.EFUsers&gt; list = iq.ToList();</span><br><span class="line"></span><br><span class="line">//根据sql语句查找</span><br><span class="line">////List&lt;Entity.EFUsers&gt; list = userP.FindList(&quot;SELECT * FROM EFUsers&quot;);</span><br></pre></td></tr></table></figure></p>
-<p>经测试，各操作均正常，EF和数据库的操作已完美实现。</p>
+            <p>在Windows Server 2016安装IIS的时候，报错，错误的主要信息是找不到源文件(The source file could not be found)，经过排查，主要是安装.Net Framework 3.5缺少源。</p>
+<p>解决方案：</p>
+<p>加载安装镜像，安装时手动指定源<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">D:\Sources\sxs</span><br></pre></td></tr></table></figure></p>
 
           
         
@@ -1490,7 +1341,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/22/Net-MVC导出CSV用Excel打开乱码问题解决/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/18/远程连接Mysql报错/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -1509,7 +1360,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/05/22/Net-MVC导出CSV用Excel打开乱码问题解决/" itemprop="url">.Net MVC导出CSV用Excel打开乱码问题解决</a></h1>
+                <a class="post-title-link" href="/2019/10/18/远程连接Mysql报错/" itemprop="url">远程连接Mysql报错</a></h1>
         
 
         <div class="post-meta">
@@ -1521,8 +1372,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-22T15:34:00+08:00">
-                2019-05-22
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-18T11:31:16+08:00">
+                2019-10-18
               </time>
             
 
@@ -1568,18 +1419,178 @@
       
         
           
-            <p>最近需要网页使用文件流输出方式导出CSV（UTF8）编码，之前使用webform时，通过文件流方式输出，用以下code导出的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">string text = &quot;我乃闲人弹琴&quot;;</span><br><span class="line"></span><br><span class="line">System.Web.HttpContext.Current.Response.AddHeader(&quot;Content-Disposition&quot;, string.Format(&quot;attachment; filename=&#123;0&#125;&quot;, System.Web.HttpUtility.UrlEncode(&quot;ttttt.csv&quot;, System.Text.Encoding.UTF8)));</span><br><span class="line">System.Web.HttpContext.Current.Response.ContentType = &quot;application/vnd.ms-excel&quot;;</span><br><span class="line">System.Web.HttpContext.Current.Response.ContentEncoding = System.Text.Encoding.GetEncoding(&quot;UTF-8&quot;);</span><br><span class="line">System.Web.HttpContext.Current.Response.BinaryWrite(new byte[] &#123; 0xEF, 0xBB, 0xBF &#125;);</span><br><span class="line">System.Web.HttpContext.Current.Response.Write(text);</span><br><span class="line">System.Web.HttpContext.Current.Response.End();</span><br></pre></td></tr></table></figure></p>
-<p>用MVC后，想尝试返回FileResult方式直接导出，所以写来代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public ActionResult Export()</span><br><span class="line">&#123;</span><br><span class="line">    string text = &quot;我乃闲人弹琴&quot;;</span><br><span class="line">    byte[] swrBytes = System.Text.Encoding.UTF8.GetBytes(text);</span><br><span class="line">    return File(swrBytes, &quot;application/vnd.ms-excel&quot;, System.Web.HttpUtility.UrlEncode(&quot;ttttt.csv&quot;, System.Text.Encoding.UTF8));</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p> 编译后，通过前台调用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@Html.ActionLink(&quot;导出&quot;, &quot;Export&quot;, &quot;Home&quot;)</span><br></pre></td></tr></table></figure></p>
-<p>导出成功了，用txt打开，正常显示，查看编码UTF-8，看似完全没有问题。</p>
-<h6 id="然而，当我用excel打开的时候，问题来了：中文乱码。-然后之前文件流输出的用excel打开正常，streamwriter写入本地文件的方式，用excel打开也正常。"><a href="#然而，当我用excel打开的时候，问题来了：中文乱码。-然后之前文件流输出的用excel打开正常，streamwriter写入本地文件的方式，用excel打开也正常。" class="headerlink" title="然而，当我用excel打开的时候，问题来了：中文乱码。 然后之前文件流输出的用excel打开正常，streamwriter写入本地文件的方式，用excel打开也正常。"></a>然而，当我用excel打开的时候，问题来了：中文乱码。 然后之前文件流输出的用excel打开正常，streamwriter写入本地文件的方式，用excel打开也正常。</h6><p>据此我进行了一系列对比，和原来的文件流输出对比，和streamWriter本地写入的文件对比，发现一个问题，那就是通过mvc导出的文件，比其他两种方式的文件少3个字节。</p>
-<p>发现现象，就可以通过现象推理本质了，那么在文件流输出的代码里找到了下面这句代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.Web.HttpContext.Current.Response.BinaryWrite(new byte[] &#123; 0xEF, 0xBB, 0xBF &#125;);</span><br></pre></td></tr></table></figure>
-<p>不多不少，正好3个字节，难道是它的原因吗？</p>
-<h6 id="于是我在mvc的file输出时，添加上这3个字节"><a href="#于是我在mvc的file输出时，添加上这3个字节" class="headerlink" title="于是我在mvc的file输出时，添加上这3个字节"></a>于是我在mvc的file输出时，添加上这3个字节</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public ActionResult Export()</span><br><span class="line">&#123;</span><br><span class="line">    string text = &quot;我乃闲人弹琴&quot;;</span><br><span class="line"></span><br><span class="line">    byte[] bomBytes = new byte[] &#123; 0xEF, 0xBB, 0xBF &#125;;</span><br><span class="line">    byte[] swrBytes = System.Text.Encoding.UTF8.GetBytes(text);</span><br><span class="line">    return File(bomBytes.Concat(swrBytes).ToArray(), &quot;application/vnd.ms-excel&quot;, System.Web.HttpUtility.UrlEncode(&quot;ttttt.csv&quot;, System.Text.Encoding.UTF8));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h6 id="不出所料，成功了。用excel打开没有乱码。"><a href="#不出所料，成功了。用excel打开没有乱码。" class="headerlink" title="不出所料，成功了。用excel打开没有乱码。"></a>不出所料，成功了。用excel打开没有乱码。</h6><p>那么是什么导致了这个问题呢？通过查询后，我找到了这么词：BOM，即(Byte Order Mark)</p>
-<p>问题就明了了起来，原因就是exce读取csv文件时，需要读取这个所谓的BOM，来决定用什么格式进行解码，而MVC的File方法生成的文件中并没有这个文件头，所以在上面方法中，我通过手动添加BOM（那三个字节）来解决了问题，除了添加字节外，还有一种方法是在string的开头添加字符，也可以解决问题。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public ActionResult Export()</span><br><span class="line">&#123;</span><br><span class="line">    string text = &quot;\uFEFF&quot; + &quot;我乃闲人弹琴&quot;;</span><br><span class="line">    byte[] swrBytes = System.Text.Encoding.UTF8.GetBytes(text);</span><br><span class="line">    return File(swrBytes, &quot;application/vnd.ms-excel&quot;, System.Web.HttpUtility.UrlEncode(&quot;ttttt.csv&quot;, System.Text.Encoding.UTF8));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>the end.</p>
+            <p>Mysql安装成功后，远程访问Mysql，提示错误。</p>
+<p>使用navicat连接，提示XXX is not allowed to connect this MySQL</p>
+<p>查询后，问题在于Mysql库中相应的User没有权限。</p>
+<p>解决方案</p>
+<p>1.CMD命令通过Mysql客户端连接登陆root<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br></pre></td></tr></table></figure></p>
+<p>然后输入密码；</p>
+<p>2.使用Mysql库<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">user mysql;</span><br></pre></td></tr></table></figure></p>
+<p>3.查询用户权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select user,host from user;</span><br></pre></td></tr></table></figure></p>
+<p><img src="\images\pasted-sam-102.png" alt="upload successful"></p>
+<p>4.添加用户权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grant all privileges on *.* to 用户名@&apos;IP地址或机器名&apos; identified by &apos;密码&apos;;</span><br></pre></td></tr></table></figure></p>
+<p>需要注意的是这里的IP地址指的是想要访问Mysql服务器的客户端的IP或机器名，并不是服务器的IP。</p>
+<p>如果想让所有机器都可以通过这个用户名访问Mysql，这里的IP设置为 %  </p>
+<p>建议开发的时候，设置为 %   这样所有机器都可以访问</p>
+<p>5.重建权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flush privileges;</span><br></pre></td></tr></table></figure></p>
+<p>6.再次查询用户权限，确认是否成功<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select user,host from user;</span><br></pre></td></tr></table></figure></p>
+<p><img src="\images\pasted-sam-103.png" alt="upload successful"><br>我们可以看到，已对CRTsoft-yanyong这台机器添加相应权限，再通过此电脑访问，已经可以访问成功。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/17/Agile-BPM调研-项目试用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sam">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="燕师傅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/17/Agile-BPM调研-项目试用/" itemprop="url">Agile-BPM调研-项目试用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T21:09:04+08:00">
+                2019-10-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+    
+    
+
+   
+
+    
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="用户组织"><a href="#用户组织" class="headerlink" title="用户组织"></a>用户组织</h4><p>使用管理员账户登陆Agile-BPM，点击用户组织标签，可以看到有三个菜单，分别为用户管理、组织管理、角色管理。</p>
+<p><img src="\images\pasted-sam-92.png" alt="upload successful"></p>
+<p>其中用户管理作用为管理用户，对用户基本的增删改查。</p>
+<p>组织管理的作用为管理组织，组织是树结构，组织中可加入和移除用户。Agile-BPM中的用户可以隶属于多个组织。</p>
+<p>角色管理可添加不同角色，可对角色分配用户。其中菜单的资源权限就是在角色中分配的。</p>
+<p>我们本次试用添加用户组织角色的目的是为了在流程中使用。</p>
+<h4 id="流程和表单"><a href="#流程和表单" class="headerlink" title="流程和表单"></a>流程和表单</h4><p>建立一个流程的步骤主要分为以下几步，官网称之为流程实施三部曲</p>
+<p>建立实体并通过实体建立对象</p>
+<p>通过对象建立表单</p>
+<p>建立流程，并对流程全局或分布设置已建立的表单</p>
+<h5 id="表单管理"><a href="#表单管理" class="headerlink" title="表单管理"></a>表单管理</h5><h6 id="业务实体"><a href="#业务实体" class="headerlink" title="业务实体"></a>业务实体</h6><p>业务实体就是数据库中的表，我们可以建立多个表，然后在业务对象将这些实体表关联起来，组成一个大的结构。这个结构就是我们流程中的主体对象。<br>具体在表单管理–业务实体菜单中，可以建立表，以及表里相应的字段，字段可设置字段类型和在Form中呈现方式。</p>
+<p>此处我们任意建立一个数据库，流程的目的在于用户上传一个文件，然后管理员查看文件并进行批注，上传批注后的文件，然后返回第一个用户，用户接收后，流程结束。</p>
+<p><img src="\images\pasted-sam-94.png" alt="upload successful"></p>
+<h6 id="业务对象"><a href="#业务对象" class="headerlink" title="业务对象"></a>业务对象</h6><p>业务对象是用来建立对象，将对个实体表结合起来，组成一个对象，其中包含了实体表的关系。</p>
+<p>其中一对一，将会在实体下面紧跟子实体，是一对有的关系。</p>
+<p>一对多，将会在一个实体下面，跟一个子实体的列表，子实体可以增加删除，子实体为数组格式。</p>
+<p>我们本次实例只有一个实体，所以建立业务对象，选择此实体即可。</p>
+<h6 id="业务表单"><a href="#业务表单" class="headerlink" title="业务表单"></a>业务表单</h6><p>业务表单，即将建立好的业务对象，做成表单，表单的排列有多种格式。单列，双列，三列等。</p>
+<p>表单可以分配权限，可设置每个表单对于每个角色（组织或用户），是否必填、只读还是可编辑，我们在流程中通常每个步骤对于表单的控制是不同的，例如第一步必填某文本框，第二步可以不填；第一步可以编辑某文本框，第二步却只能查看；等等。</p>
+<p>还有一种情况是流程的每一步对于表单显示可能不同，可能第一步有两个文本框，第二步有完整的所有文本框，等等；</p>
+<p>所以我们可以在一个流程中，添加多个表单，并分配不同的权限，在流程的每一步分别引用不同的表单。</p>
+<p>此处我添加了3个表单，分别分配了可编辑权限。</p>
+<p><img src="\images\pasted-sam-95.png" alt="upload successful"><br>上图为表单列表</p>
+<p><img src="\images\pasted-sam-96.png" alt="upload successful"><br>上图为表单排列</p>
+<p><img src="\images\pasted-sam-97.png" alt="upload successful"><br>上图为表单权限分配</p>
+<h5 id="流程管理"><a href="#流程管理" class="headerlink" title="流程管理"></a>流程管理</h5><p>在流程管理–流程列表页面，新增一个流程</p>
+<p>首先在右侧选择业务对象，然后选择全局表单，然后在流程图主视图画相应的流程图，再对每一步进行用户选择，相关事件创建，这样一个流程图就完成了。</p>
+<p>下面我们用图形的方式，来分别呈现全局设置，和针对每个流程节点的设置。</p>
+<h6 id="全局配置"><a href="#全局配置" class="headerlink" title="全局配置"></a>全局配置</h6><p><img src="\images\pasted-sam-98.png" alt="upload successful"></p>
+<h6 id="单步配置"><a href="#单步配置" class="headerlink" title="单步配置"></a>单步配置</h6><p><img src="\images\pasted-sam-99.png" alt="upload successful"></p>
 
           
         
@@ -1619,7 +1630,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1665,7 +1676,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">67</span>
+                  <span class="site-state-item-count">87</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1715,7 +1726,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

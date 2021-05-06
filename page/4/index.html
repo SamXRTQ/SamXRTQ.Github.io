@@ -261,7 +261,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/22/C-数字ToString/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/31/vue中Keep-alive-页面缓存-的使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -280,7 +280,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/11/22/C-数字ToString/" itemprop="url">C#数字ToString()</a></h1>
+                <a class="post-title-link" href="/2020/03/31/vue中Keep-alive-页面缓存-的使用/" itemprop="url">vue中Keep-alive(页面缓存)的使用</a></h1>
         
 
         <div class="post-meta">
@@ -292,8 +292,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-22T10:20:49+08:00">
-                2019-11-22
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-31T15:17:41+08:00">
+                2020-03-31
               </time>
             
 
@@ -339,13 +339,27 @@
       
         
           
-            <h6 id="整数前面补0"><a href="#整数前面补0" class="headerlink" title="整数前面补0"></a>整数前面补0</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">i.ToString().PadLeft(3,&apos;0&apos;);</span><br></pre></td></tr></table></figure>
-<p>3代表一共3位。</p>
-<h6 id="保留有效数字"><a href="#保留有效数字" class="headerlink" title="保留有效数字"></a>保留有效数字</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d.ToString(&quot;0.###&quot;);</span><br></pre></td></tr></table></figure>
-<p>几个井号就是保留几位</p>
-<p>0不保留   例如保留三位  98.7   而不会是98.700</p>
-<h6 id="保留小数"><a href="#保留小数" class="headerlink" title="保留小数"></a>保留小数</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d.ToString(&quot;f3&quot;);</span><br></pre></td></tr></table></figure>
-<p>0保留   例如保留三位  98.700   而不会是98.7</p>
+            <p>在开发网页时，尤其是移动端网页跳转时，会碰到以下问题，那就是在列表中我滚动到页面下方第很多页时，点击项跳转编辑页面，但是我没有编辑，返回时，列表页状态没有了，需要从第一页开始重新往下滚动，那么就需要有一个功能，把页面状态给存储起来，当我返回的时候，直接显示，而不是重新加载。</p>
+<p>vue的keep-alive组件就提供了这个功能。</p>
+<p>简单的总结，就是在路由配置的meta添加keepAlive属性，为true的路由使用keep-alive组件。</p>
+<p>然后对于keep-alive组件中的页面，可能只需要某些情况需要缓存，其他情况依然需要重新刷新数据，于是就使用activated钩子函数来解决这个问题。</p>
+<h6 id="配置路由的meta属性"><a href="#配置路由的meta属性" class="headerlink" title="配置路由的meta属性"></a>配置路由的meta属性</h6><p>在router文件夹的index.js中，对部分页面进行keepAlive属性设置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  path: &apos;/favorite&apos;,</span><br><span class="line">  name: &apos;favorite&apos;,</span><br><span class="line">  component: FavoriteCom,</span><br><span class="line">  meta:</span><br><span class="line">  &#123;</span><br><span class="line">    keepAlive: true,</span><br><span class="line">    isBack: true</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在这里的isBack属性就是为了判断从哪些页面进入时直接显示，而从哪些页面进入时要刷新数据了。</p>
+<h6 id="路由出口设置"><a href="#路由出口设置" class="headerlink" title="路由出口设置"></a>路由出口设置</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;keep-alive&gt;</span><br><span class="line">  &lt;router-view v-if=&quot;$route.meta.keepAlive&quot; /&gt;</span><br><span class="line">&lt;/keep-alive&gt;</span><br><span class="line">&lt;router-view v-if=&quot;!$route.meta.keepAlive&quot; /&gt;</span><br></pre></td></tr></table></figure>
+<h6 id="在Favorite-vue组件中，我们用beforeRouteEnter来拦截路由"><a href="#在Favorite-vue组件中，我们用beforeRouteEnter来拦截路由" class="headerlink" title="在Favorite.vue组件中，我们用beforeRouteEnter来拦截路由"></a>在Favorite.vue组件中，我们用beforeRouteEnter来拦截路由</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">beforeRouteEnter(to, from, next) &#123;</span><br><span class="line">  to.meta.isBack = false;</span><br><span class="line">  //</span><br><span class="line">  if (from.path == &quot;/chart&quot; || from.path == &quot;/favoritesetting&quot;) &#123;</span><br><span class="line">    to.meta.isBack = true;</span><br><span class="line">  &#125;</span><br><span class="line">  next();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个含义就是如果是从chart页面或者favoritesetting页面进入此页，则设置属性isBack，表明需要显示缓存</p>
+<h6 id="在favorite-vue组件中，设置activated钩子函数"><a href="#在favorite-vue组件中，设置activated钩子函数" class="headerlink" title="在favorite.vue组件中，设置activated钩子函数"></a>在favorite.vue组件中，设置activated钩子函数</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">activated() &#123;</span><br><span class="line">    if (!this.$route.meta.isBack) &#123;</span><br><span class="line">      this.ReLoadData();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个含义就是，如果isBack属性为false，那么就刷新页面，反之就不做任何操作。</p>
+<h6 id="one-more-question"><a href="#one-more-question" class="headerlink" title="one more question"></a>one more question</h6><p>还有一个问题，就是假如我进入编辑页面，如果没有编辑直接返回，那么不需要刷新，如果编辑并保存了属性，这时候跳转回列表页需要刷新数据，该如何操作呢？</p>
+<p>这里有两种方法</p>
+<p>1.通过前台修改数据。  这个不具体说了，就是获取到改了哪些数据，然后手动修改在页面上</p>
+<p>2.我这次用的方法，就是保存成功后，需要刷新列表，那么favorite列表页怎么判断是没有修改的setting页跳转还是修改后的setting页跳转的呢。</p>
+<p>这里我采用了中间页的方式，新建一个页面专门用来做中转跳转，从这个页跳到的favorite(或其他页面)，当然就会刷新列表了</p>
+<p>新建JumpPage文件夹，Index.vue</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default &#123;</span><br><span class="line">created()</span><br><span class="line">&#123;</span><br><span class="line">    //从此页跳转就刷新了</span><br><span class="line">    this.$router.push(&#123;name:this.$route.query.RouteName&#125;);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style&gt;</span><br><span class="line"></span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+<p>然后在setting页保存成功后，跳转到jumppage<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">this.$router.push(&#123;</span><br><span class="line">  path: &quot;/jumppage&quot;,</span><br><span class="line">  query: &#123; RouteName: &quot;favorite&quot; &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>好了，这样就实现了此功能。</p>
+<p>在以后使用vuex时，将会有更好的办法。</p>
 
           
         
@@ -394,7 +408,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/18/C-索引器/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/31/vue写工具函数，导入使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -413,7 +427,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/11/18/C-索引器/" itemprop="url">C#索引器</a></h1>
+                <a class="post-title-link" href="/2020/03/31/vue写工具函数，导入使用/" itemprop="url">vue写工具函数，导入使用</a></h1>
         
 
         <div class="post-meta">
@@ -425,8 +439,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-18T10:40:00+08:00">
-                2019-11-18
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-31T15:13:14+08:00">
+                2020-03-31
               </time>
             
 
@@ -472,18 +486,12 @@
       
         
           
-            <h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>在C#中，索引器允许类或结构的实例就像数组一样进行索引。</p>
-<p>这里我们引用MSDN对索引器的概述：</p>
-<ul>
-<li>使用索引器可以用类似于数组的方式为对象建立索引。</li>
-<li>get 取值函数返回值。 set 取值函数分配值。</li>
-<li>this 关键字用于定义索引器。</li>
-<li>value 关键字用于定义 set 索引器所赋的值。</li>
-<li>索引器不必根据整数值进行索引；由你决定如何定义特定的查找机制。</li>
-<li>索引器可被重载。</li>
-<li>索引器可以有多个形参，例如当访问二维数组时。</li>
-</ul>
-<h4 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h4><p>同样，这里我们直接引用MSDN提供的实例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">using System;</span><br><span class="line"></span><br><span class="line">class SampleCollection&lt;T&gt;</span><br><span class="line">&#123;</span><br><span class="line">   // Declare an array to store the data elements.</span><br><span class="line">   private T[] arr = new T[100];</span><br><span class="line"></span><br><span class="line">   // Define the indexer to allow client code to use [] notation.</span><br><span class="line">   public T this[int i]</span><br><span class="line">   &#123;</span><br><span class="line">      get &#123; return arr[i]; &#125;</span><br><span class="line">      set &#123; arr[i] = value; &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Program</span><br><span class="line">&#123;</span><br><span class="line">   static void Main()</span><br><span class="line">   &#123;</span><br><span class="line">      var stringCollection = new SampleCollection&lt;string&gt;();</span><br><span class="line">      stringCollection[0] = &quot;Hello, World&quot;;</span><br><span class="line">      Console.WriteLine(stringCollection[0]);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line">// The example displays the following output:</span><br><span class="line">//       Hello, World.</span><br></pre></td></tr></table></figure></p>
+            <p>在写vue项目时，也需要对一些通用的函数进行封装，然后方便调用。方法是这样的。这里以时间格式化函数为例。</p>
+<h6 id="在src中新建一个scripts文件夹，新建一个timeutil-js文件"><a href="#在src中新建一个scripts文件夹，新建一个timeutil-js文件" class="headerlink" title="在src中新建一个scripts文件夹，新建一个timeutil.js文件"></a>在src中新建一个scripts文件夹，新建一个timeutil.js文件</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">const timeFormatter = function FormatTime(val, formatter) &#123;</span><br><span class="line">    let year = val.getFullYear();</span><br><span class="line">    let month = val.getMonth() + 1;</span><br><span class="line">    let day = val.getDate();</span><br><span class="line">    let hour = val.getHours();</span><br><span class="line">    let minute = val.getMinutes();</span><br><span class="line">    let second = val.getSeconds();</span><br><span class="line">    if (month &gt;= 1 &amp;&amp; month &lt;= 9) &#123;</span><br><span class="line">        month = `0$&#123;month&#125;`;</span><br><span class="line">    &#125;</span><br><span class="line">    if (day &gt;= 1 &amp;&amp; day &lt;= 9) &#123;</span><br><span class="line">        day = `0$&#123;day&#125;`;</span><br><span class="line">    &#125;</span><br><span class="line">    if (hour &gt;= 0 &amp;&amp; hour &lt;= 9) &#123;</span><br><span class="line">        hour = `0$&#123;hour&#125;`;</span><br><span class="line">    &#125;</span><br><span class="line">    if (minute &gt;= 0 &amp;&amp; minute &lt;= 9) &#123;</span><br><span class="line">        minute = `0$&#123;minute&#125;`;</span><br><span class="line">    &#125;</span><br><span class="line">    if (second &gt;= 0 &amp;&amp; second &lt;= 9) &#123;</span><br><span class="line">        second = `0$&#123;second&#125;`;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (!formatter) &#123;</span><br><span class="line">        return `$&#123;year&#125;-$&#123;month&#125;-$&#123;day&#125; $&#123;hour&#125;:$&#123;minute&#125;:$&#123;second&#125;`;</span><br><span class="line">    &#125;</span><br><span class="line">    return formatter.replace(&quot;yyyy&quot;, year).replace(&quot;MM&quot;, month)</span><br><span class="line">    .replace(&quot;dd&quot;, day).replace(&quot;HH&quot;, hour)</span><br><span class="line">    .replace(&quot;mm&quot;, minute).replace(&quot;ss&quot;,second);</span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">export &#123; timeFormatter &#125;;</span><br></pre></td></tr></table></figure>
+<h6 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h6><p>在.vue组件中导入使用即可<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import &#123; timeFormatter &#125; from &quot;../../scripts/timeutil&quot;;</span><br></pre></td></tr></table></figure></p>
+<p>使用时</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">timeFormatter(val, &quot;yyyy-MM-dd HH:mm&quot;);</span><br></pre></td></tr></table></figure>
+<p>Cool~~~</p>
 
           
         
@@ -532,7 +540,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/18/C-扩展方法/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/31/ES6数组交换两个对象的顺序/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -551,7 +559,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/11/18/C-扩展方法/" itemprop="url">C#扩展方法</a></h1>
+                <a class="post-title-link" href="/2020/03/31/ES6数组交换两个对象的顺序/" itemprop="url">ES6数组交换两个对象的顺序</a></h1>
         
 
         <div class="post-meta">
@@ -563,8 +571,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-18T10:20:00+08:00">
-                2019-11-18
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-31T15:11:24+08:00">
+                2020-03-31
               </time>
             
 
@@ -610,16 +618,10 @@
       
         
           
-            <h4 id="扩展方法概述"><a href="#扩展方法概述" class="headerlink" title="扩展方法概述"></a>扩展方法概述</h4><p>扩展方法是C#里非常好用的一种语法糖，其主要作用在于在类外对类进行扩展。</p>
-<p>例如基于IEnumerable实现的类，在引用Linq后，会有很多本身不存在的方法，这是在Linq中进行扩展的方法。</p>
-<h4 id="扩展方法实例"><a href="#扩展方法实例" class="headerlink" title="扩展方法实例"></a>扩展方法实例</h4><h6 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h6><p>这里示例一个IEM项目中基本的扩展方法，是对System.DateTime的扩展。</p>
-<p>在IEM项目中，DateTime的输出格式一律被要求为”yyyy-MM-dd HH:mm:ss”，所以我们在对DateTime进行Tostring的时候，总是需要输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DateTime.Now.ToString(&quot;yyyy-MM-dd HH:mm:ss&quot;)</span><br></pre></td></tr></table></figure></p>
-<p>此处，我们对System.DateTime进行一下扩展。</p>
-<h6 id="建立静态类和方法"><a href="#建立静态类和方法" class="headerlink" title="建立静态类和方法"></a>建立静态类和方法</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">/// &lt;summary&gt;</span><br><span class="line">/// 这里需要静态类</span><br><span class="line">/// &lt;/summary&gt;</span><br><span class="line">public static class DateTimeExt</span><br><span class="line">&#123;</span><br><span class="line">    /// &lt;summary&gt;</span><br><span class="line">    /// 需要静态方法</span><br><span class="line">    /// &lt;/summary&gt;</span><br><span class="line">    /// &lt;param name=&quot;time&quot;&gt;参数要以this开头&lt;/param&gt;</span><br><span class="line">    /// &lt;returns&gt;&lt;/returns&gt;</span><br><span class="line">    public static string ToIEMString(this DateTime time)</span><br><span class="line">    &#123;</span><br><span class="line">        return time.ToString(&quot;yyyy-MM-dd HH:mm:ss&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里我们对DateTime编写一个扩展方法，叫ToIEMString，直接调用这个方法就可以获取我们的默认格式。</p>
-<h6 id="调用"><a href="#调用" class="headerlink" title="调用"></a>调用</h6><p>调用方法很简单，该类型的参数可以直接调用，如同调用类中本身的方法一样。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DateTime.Now.ToIEMString()</span><br></pre></td></tr></table></figure></p>
-<p>需要注意的是，如果不在同一个命名空间下，需要进行引用。</p>
-<p>这样我们就完成了对类的一个扩展。</p>
+            <p>在写vue时，需要对数组的两个元素进行交换，发现以下新语法很有趣，记录下来<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[a,b]=[b,a]</span><br></pre></td></tr></table></figure></p>
+<p>也就是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[list[0],list[1]]=[list[1],list[0]]</span><br></pre></td></tr></table></figure>
+<p>Cool</p>
 
           
         
@@ -668,7 +670,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/12/IIS调用COM组件的权限问题/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/31/ES6数组每个对象添加属性/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -687,7 +689,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/11/12/IIS调用COM组件的权限问题/" itemprop="url">IIS调用COM组件的权限问题</a></h1>
+                <a class="post-title-link" href="/2020/03/31/ES6数组每个对象添加属性/" itemprop="url">ES6数组每个对象添加属性</a></h1>
         
 
         <div class="post-meta">
@@ -699,8 +701,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-12T22:15:58+08:00">
-                2019-11-12
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-31T15:08:02+08:00">
+                2020-03-31
               </time>
             
 
@@ -746,12 +748,9 @@
       
         
           
-            <p>IIS无法访问COM组件一般是权限问题，一般按照以下步骤即可解决</p>
-<h6 id="DCOM设置"><a href="#DCOM设置" class="headerlink" title="DCOM设置"></a>DCOM设置</h6><p>运行命令dcomcnfg打开组件服务窗口。</p>
-<p>展开组件服务–&gt;计算机—&gt;我的电脑—-&gt;DCOM配置，找到相应的组件</p>
-<p>右击属性，安全标签下的三个选项都选择自定义，然后编辑，分别添加NETWORK SERVICE用户。</p>
-<p>然后在点击标识标签，选择交互式用户</p>
-<h6 id="IIS应用程序池设置"><a href="#IIS应用程序池设置" class="headerlink" title="IIS应用程序池设置"></a>IIS应用程序池设置</h6><p>打开应用程序池高级设置，将标识选项修改为LocalSystem，如果还是不行，就改为自定义输入管理员账户密码。</p>
+            <p>在写demo项目时，碰到个问题，那就是我希望对返回的数组新增一个属性，所有对象都新增这个属性，因为我不增加属性的话，用true，false判断发生了一些问题，不能都识别。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">var array =    [&#123;key: 1, value: 10&#125;, </span><br><span class="line">               &#123;key: 2, value: 20&#125;, </span><br><span class="line">               &#123;key: 3, value: 30&#125;];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">var arrayResult = array.map(function(obj,index) &#123; </span><br><span class="line">   obj.isSelected=true;//添加属性</span><br><span class="line">   return obj;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>ES6新语法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Array.from(array , item =&gt; item.isSelected = false)</span><br></pre></td></tr></table></figure></p>
 
           
         
@@ -800,7 +799,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/12/WEBAPI-POST-FromBody-后台无法接收参数的问题/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/31/vue-router路由拦截/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -819,7 +818,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/11/12/WEBAPI-POST-FromBody-后台无法接收参数的问题/" itemprop="url">WEBAPI POST [FromBody] 后台无法接收参数的问题</a></h1>
+                <a class="post-title-link" href="/2020/03/31/vue-router路由拦截/" itemprop="url">vue-router路由拦截</a></h1>
         
 
         <div class="post-meta">
@@ -831,8 +830,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-12T21:52:03+08:00">
-                2019-11-12
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-31T15:05:58+08:00">
+                2020-03-31
               </time>
             
 
@@ -878,25 +877,9 @@
       
         
           
-            <p>在WEBAPI（MVC）中，POST方法碰到后台无法接收参数的问题，现将此问题记录。</p>
-<h3 id="Ajax传Json对象时"><a href="#Ajax传Json对象时" class="headerlink" title="Ajax传Json对象时"></a>Ajax传Json对象时</h3><p>前台代码先看<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">var dataStr = $(&quot;#tbDatax&quot;).val();</span><br><span class="line">//将字符串转化为JSON格式</span><br><span class="line">var data = $.parseJSON(dataStr);</span><br><span class="line">$.ajax(&#123;</span><br><span class="line">    type: $(&quot;#type&quot;).val(),</span><br><span class="line">    url: $(&quot;#tbUrl&quot;).val(),</span><br><span class="line">    data: data,</span><br><span class="line">    dataType: &quot;json&quot;,</span><br><span class="line">    traditional: true,</span><br><span class="line">    success: function (data1) &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;,</span><br><span class="line">    error: function (err) &#123;</span><br><span class="line">        alert(err.status);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
-<p>如上代码所示，这种方法直接传递Json对象，在这种情况下，后台获取不到参数的情况有以下几种：</p>
-<h6 id="传递简单类型"><a href="#传递简单类型" class="headerlink" title="传递简单类型"></a>传递简单类型</h6><p>假设后台的FromBody参数为简单类型（string,int,string[]）等，如下代码所示<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[HttpPost]</span><br><span class="line">[Route(&quot;Test&quot;)]</span><br><span class="line">public IHttpActionResult Test([FromBody]string str)</span><br><span class="line">&#123;</span><br><span class="line">    throw new Exception();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>经测试，全部无法获取。</p>
-<p>解决方案：将简单类型封装成类，然后用类操作。</p>
-<h6 id="模型属性无访问修饰"><a href="#模型属性无访问修饰" class="headerlink" title="模型属性无访问修饰"></a>模型属性无访问修饰</h6><p>先看代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">    [HttpPost]</span><br><span class="line">    [Route(&quot;Test&quot;)]</span><br><span class="line">    public IHttpActionResult Test([FromBody]TestModel model)</span><br><span class="line">    &#123;</span><br><span class="line">        throw new Exception();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    //下面是类</span><br><span class="line">public class TestModel</span><br><span class="line">&#123;</span><br><span class="line">    public string str;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>经测试，无法获取。</p>
-<p>解决方案：TestModel类的属性，增加修饰符<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public class TestModel</span><br><span class="line">&#123;</span><br><span class="line">    //增加get,set修饰符</span><br><span class="line">    public string str &#123; get; set; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h6 id="模型属性为自定义类"><a href="#模型属性为自定义类" class="headerlink" title="模型属性为自定义类"></a>模型属性为自定义类</h6><p>且看模型定义代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class TestModel</span><br><span class="line">&#123;</span><br><span class="line">    public string str &#123; get; set; &#125;</span><br><span class="line">    //属性非简单类型，而是一个自定义类</span><br><span class="line">    public ChildModel childModel &#123; get; set; &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class ChildModel</span><br><span class="line">&#123;</span><br><span class="line">    public string strChild &#123; get; set; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>经测试，childModel的strChild属性无法获得。</p>
-<p>解决方案：目前我不会解决。</p>
-<p>由上得出结论，传递对象不仅麻烦，关键是有无法解决的问题，所以就需要找其他方法。那么问题来了，找什么方法呢？经过调研，传字符串，并设置ContentType可以有效解决以上问题。具体原因就不表了，跟Jq定义有关。</p>
-<h3 id="传递字符串，并设置ContentType"><a href="#传递字符串，并设置ContentType" class="headerlink" title="传递字符串，并设置ContentType"></a>传递字符串，并设置ContentType</h3><p>前台代码一览<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">var dataStr = $(&quot;#tbDatax&quot;).val();</span><br><span class="line">$.ajax(&#123;</span><br><span class="line">    type: $(&quot;#type&quot;).val(),</span><br><span class="line">    url: $(&quot;#tbUrl&quot;).val(),</span><br><span class="line">    data: dataStr,</span><br><span class="line">    //注意此处设置contentType</span><br><span class="line">    contentType: &quot;application/json;charset=UTF-8&quot;,</span><br><span class="line">    traditional: true,</span><br><span class="line">    success: function (data1) &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;,</span><br><span class="line">    error: function (err) &#123;</span><br><span class="line">        alert(err.status);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
-<p>如上代码所示，设置contentType，然后传递字符串。</p>
-<p>简单类型可以传递了(string记得加上双引号)。</p>
-<p>后台模型属性没有定义访问修饰符也可以解析了。</p>
-<p>模型属性为自定义类也可以解析了。</p>
-<p>世界忽然安静了，也不那么烦躁了，你说气人不？</p>
+            <p>在router的index.js加上beforeeach拦截，如果检查用户未登录就跳转登录页面。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">router.beforeEach((to, from, next) =&gt; &#123;</span><br><span class="line">  if (to.meta.allowAnymous) &#123;</span><br><span class="line">    next();</span><br><span class="line">  &#125;</span><br><span class="line">  else &#123;</span><br><span class="line">    let tickets = localStorage.getItem(&apos;tickets&apos;);</span><br><span class="line">    if (tickets == null || tickets == &apos;&apos;) &#123;</span><br><span class="line">      next(&apos;/login&apos;);</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">      next();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>对不用登录的路由配置meta中，添加allowAnymous属性，这样就可以实现对各页面的登录判断了。</p>
 
           
         
@@ -945,7 +928,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/08/Winform集成DLL到exe中/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/31/Axios拦截器/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -964,7 +947,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/11/08/Winform集成DLL到exe中/" itemprop="url">Winform集成DLL到exe中</a></h1>
+                <a class="post-title-link" href="/2020/03/31/Axios拦截器/" itemprop="url">Axios拦截器</a></h1>
         
 
         <div class="post-meta">
@@ -976,8 +959,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-08T17:54:04+08:00">
-                2019-11-08
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-31T15:00:42+08:00">
+                2020-03-31
               </time>
             
 
@@ -1023,16 +1006,15 @@
       
         
           
-            <p>在Winform中，有时会用到一些动态链接库（DLL）。有时由于是小工具，为了方便，想将这些DLL集成到EXE中。</p>
-<p>原理简单的说，就是将DLL嵌入到资源中，然后引用DLL时禁止复制到本地，然后绑定AssemblyResolve事件，这样程序在找不到程序集的时候就会触发事件，根据代码从资源中动态调用。</p>
-<p>需要注意的是，如果是在windows service中，不仅要在program中添加事件，在projectInstaller中也要添加事件。</p>
-<p>具体步骤如下</p>
-<h6 id="项目中添加一个文件夹，将DLL都放到这个文件夹里。"><a href="#项目中添加一个文件夹，将DLL都放到这个文件夹里。" class="headerlink" title="项目中添加一个文件夹，将DLL都放到这个文件夹里。"></a>项目中添加一个文件夹，将DLL都放到这个文件夹里。</h6><p><img src="\images\pasted-sam-101.png" alt="upload successful"></p>
-<p>这里文件夹我起名叫Lib</p>
-<h6 id="设置这些DLL的生成操作属性为嵌入的资源。"><a href="#设置这些DLL的生成操作属性为嵌入的资源。" class="headerlink" title="设置这些DLL的生成操作属性为嵌入的资源。"></a>设置这些DLL的生成操作属性为嵌入的资源。</h6><p><img src="\images\pasted-sam-104.png" alt="upload successful"></p>
-<h6 id="引用这些DLL，并在引用里设置复制到本地属性为False。"><a href="#引用这些DLL，并在引用里设置复制到本地属性为False。" class="headerlink" title="引用这些DLL，并在引用里设置复制到本地属性为False。"></a>引用这些DLL，并在引用里设置复制到本地属性为False。</h6><p><img src="\images\pasted-sam-105.png" alt="upload successful"></p>
-<h6 id="在Program-cs中添加AssemblyResolve事件。"><a href="#在Program-cs中添加AssemblyResolve事件。" class="headerlink" title="在Program.cs中添加AssemblyResolve事件。"></a>在Program.cs中添加AssemblyResolve事件。</h6><p>编写CurrentDomain_AssemblyResolve函数，并在Main()方法里，绑定事件。</p>
-<p>注意在事件中，设置resourceName时，文件夹要写为放DLL的文件夹，这里我是Lib文件夹。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">static class Program</span><br><span class="line">&#123;</span><br><span class="line">    /// &lt;summary&gt;</span><br><span class="line">    /// 应用程序的主入口点。</span><br><span class="line">    /// &lt;/summary&gt;</span><br><span class="line">    [STAThread]</span><br><span class="line">    static void Main()</span><br><span class="line">    &#123;</span><br><span class="line">        //增加AssemblyResolve事件</span><br><span class="line">        AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;</span><br><span class="line">        Application.EnableVisualStyles();</span><br><span class="line">        Application.SetCompatibleTextRenderingDefault(false);</span><br><span class="line">        Application.Run(new Form1());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /// &lt;summary&gt;</span><br><span class="line">    /// AssemblyResolve事件</span><br><span class="line">    /// &lt;/summary&gt;</span><br><span class="line">    /// &lt;param name=&quot;sender&quot;&gt;&lt;/param&gt;</span><br><span class="line">    /// &lt;param name=&quot;args&quot;&gt;&lt;/param&gt;</span><br><span class="line">    /// &lt;returns&gt;&lt;/returns&gt;</span><br><span class="line">    static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)</span><br><span class="line">    &#123;</span><br><span class="line">        String resourceName = System.Reflection.MethodBase.GetCurrentMethod().ReflectedType.Namespace + &quot;.Lib.&quot; + new AssemblyName(args.Name).Name + &quot;.dll&quot;;</span><br><span class="line">        using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))</span><br><span class="line">        &#123;</span><br><span class="line">            Byte[] assemblyData = new Byte[stream.Length];</span><br><span class="line">            stream.Read(assemblyData, 0, assemblyData.Length);</span><br><span class="line">            return Assembly.Load(assemblyData);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+            <p>在vue项目中，需要使用axios请求数据，那么如果需要对请求操作，获取数据操作进行统一的配置，例如请求时我们添加token头用来认证，错误时获取错误码，如果是401就跳转登录页面等操作时，就需要使用拦截器功能。</p>
+<p>拦截器分为request拦截和response拦截，也就是请求和响应。</p>
+<h5 id="request拦截器"><a href="#request拦截器" class="headerlink" title="request拦截器"></a>request拦截器</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Axios.interceptors.request.use(</span><br><span class="line">    config =&gt; &#123;</span><br><span class="line">        let tickets = localStorage.getItem(&quot;tickets&quot;);</span><br><span class="line">        if (tickets != null &amp;&amp; tickets != &apos;&apos;) &#123;</span><br><span class="line">            config.headers.Authorization = `BasicAuth $&#123;tickets&#125;`;</span><br><span class="line">        &#125;</span><br><span class="line">        return config;</span><br><span class="line">    &#125;, err =&gt; &#123;</span><br><span class="line">        return Promise.reject(err);</span><br><span class="line">    &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h5 id="response拦截器"><a href="#response拦截器" class="headerlink" title="response拦截器"></a>response拦截器</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Axios.interceptors.response.use(</span><br><span class="line">    response =&gt; &#123;</span><br><span class="line"></span><br><span class="line">        return response;</span><br><span class="line">    &#125;, err =&gt; &#123;</span><br><span class="line">        if (err.response.status == 401) &#123;</span><br><span class="line">            Toast.fail(`登录失效，请重新登录`);</span><br><span class="line">            localStorage.removeItem(&quot;tickets&quot;);</span><br><span class="line">            router.push(&apos;/login&apos;);</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            return Promise.reject(err);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，一开始我把拦截器写在main.js中的最下方，也就是new vue之后，所以造成的后果就是在vue生命周期的create，activated等函数中，拦截器不生效。</p>
+<p>所以最后我把axios提出来，单独作为js，写拦截器后，在main.js中引用封装后的axios</p>
+<p>新建文件夹，axios，目录下新建index.js文件，写入以下代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">import Axios from &apos;axios&apos;</span><br><span class="line"></span><br><span class="line">import &#123; Toast &#125; from &apos;vant&apos;;</span><br><span class="line"></span><br><span class="line">import router from &apos;../router&apos;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Axios.interceptors.request.use(</span><br><span class="line">    config =&gt; &#123;</span><br><span class="line">        let tickets = localStorage.getItem(&quot;tickets&quot;);</span><br><span class="line">        if (tickets != null &amp;&amp; tickets != &apos;&apos;) &#123;</span><br><span class="line">            config.headers.Authorization = `BasicAuth $&#123;tickets&#125;`;</span><br><span class="line">        &#125;</span><br><span class="line">        return config;</span><br><span class="line">    &#125;, err =&gt; &#123;</span><br><span class="line">        return Promise.reject(err);</span><br><span class="line">    &#125;</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">Axios.interceptors.response.use(</span><br><span class="line">    response =&gt; &#123;</span><br><span class="line"></span><br><span class="line">        return response;</span><br><span class="line">    &#125;, err =&gt; &#123;</span><br><span class="line">        if (err.response.status == 401) &#123;</span><br><span class="line">            Toast.fail(`登录失效，请重新登录`);</span><br><span class="line">            localStorage.removeItem(&quot;tickets&quot;);</span><br><span class="line">            router.push(&apos;/login&apos;);</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            return Promise.reject(err);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">export default Axios;</span><br></pre></td></tr></table></figure></p>
+<p>在main.js中<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import Axios from &apos;./axios&apos;</span><br></pre></td></tr></table></figure></p>
+<p>大功告成。</p>
 
           
         
@@ -1081,7 +1063,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/24/使用Serv-U搭建FTP-SFTP等服务器/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/31/从零搭建一个VUE项目-采用脚手架/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -1100,7 +1082,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/10/24/使用Serv-U搭建FTP-SFTP等服务器/" itemprop="url">使用Serv-U搭建FTP-SFTP等服务器</a></h1>
+                <a class="post-title-link" href="/2020/03/31/从零搭建一个VUE项目-采用脚手架/" itemprop="url">从零搭建一个VUE项目(采用脚手架)</a></h1>
         
 
         <div class="post-meta">
@@ -1112,8 +1094,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-24T16:51:42+08:00">
-                2019-10-24
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-31T14:23:18+08:00">
+                2020-03-31
               </time>
             
 
@@ -1159,11 +1141,37 @@
       
         
           
-            <p>1.打开Serv-U</p>
-<p>2.点击导航旁边的+按钮，新建域</p>
-<p>3.依次输入名称、描述—-域类型—-根目录—-FTP/SFTP/HTTP等是否启用及端口号—–IP地址，即可部署成功。</p>
-<p><img src="\images\pasted-sam-100.png" alt="upload successful"></p>
-<p>需要注意的是Serv-U的注册码输入地址是在以下地址输入的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">全局---服务器详细信息---许可证信息---输入授权ID</span><br></pre></td></tr></table></figure></p>
+            <h3 id="基本搭建"><a href="#基本搭建" class="headerlink" title="基本搭建"></a>基本搭建</h3><h6 id="安装node-js"><a href="#安装node-js" class="headerlink" title="安装node.js"></a>安装node.js</h6><h6 id="安装npm"><a href="#安装npm" class="headerlink" title="安装npm"></a>安装npm</h6><p>node.js自带npm，如果版本较低，可专门下载安装</p>
+<h6 id="切换npm源"><a href="#切换npm源" class="headerlink" title="切换npm源"></a>切换npm源</h6><p>由于npm的源在国外，访问很是费劲，此处我们切换成国内的CNPM(淘宝源)，访问流程，据说与npm源有十来分钟的同步差。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g cnpm --registry=https://registry.npm.taobao.org</span><br></pre></td></tr></table></figure>
+<p>如此我们以后安装插件，用cnpm代替npm</p>
+<h6 id="全局安装vue-cli"><a href="#全局安装vue-cli" class="headerlink" title="全局安装vue-cli"></a>全局安装vue-cli</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cnpm install vue-cli -g</span><br></pre></td></tr></table></figure>
+<h6 id="安装webpack"><a href="#安装webpack" class="headerlink" title="安装webpack"></a>安装webpack</h6><p>webpack是用来编译打包前端的工具</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cnpm install webpack -g</span><br></pre></td></tr></table></figure>
+<h6 id="使用脚手架生成项目"><a href="#使用脚手架生成项目" class="headerlink" title="使用脚手架生成项目"></a>使用脚手架生成项目</h6><p>在项目的目录里运行命令生成项目，这里我的目录为project，生成的项目起名为spatest<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vue init webpack spatest</span><br></pre></td></tr></table></figure></p>
+<h6 id="运行dev"><a href="#运行dev" class="headerlink" title="运行dev"></a>运行dev</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd spatest</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run dev</span><br></pre></td></tr></table></figure>
+<p>浏览器输入提示的ip地址就可以访问了。</p>
+<p>至于这里为什么输入npm run dev就能运行，以及具体的配置，那是webpack的配置了。</p>
+<p>而且这个dev是热运行的，改代码后，立马就会体现在页面上。</p>
+<p>其中我们代码的目录主要是src文件夹下。</p>
+<h3 id="引用vant"><a href="#引用vant" class="headerlink" title="引用vant"></a>引用vant</h3><p>我们写vue项目采用引用外部ui组件库的形式，可以使样式美观，编写便捷。<br>这里我们使用vant</p>
+<h6 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cnpm install vant --save</span><br></pre></td></tr></table></figure>
+<h6 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h6><p>安装vant后，在main.js中对vant进行引用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import Vant from &apos;vant&apos;;</span><br><span class="line">Vue.use(Vant);</span><br></pre></td></tr></table></figure>
+<p>这样我们就可以使用vant了。</p>
+<h3 id="axios"><a href="#axios" class="headerlink" title="axios"></a>axios</h3><p>axios使在vue项目时，获取数据的组建，类似我们在jquery中使用的ajax。</p>
+<h6 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install axios --save</span><br></pre></td></tr></table></figure>
+<h6 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h6><p>同样在main.js中我们引用它，然后对它进行一些基本设置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import Axios from &apos;axios&apos;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//配置axios</span><br><span class="line">Axios.defaults.baseURL = &apos;http://localhost/webapi&apos;;</span><br><span class="line">Vue.prototype.$axios = Axios;</span><br></pre></td></tr></table></figure>
+<p>这里对axios进行了</p>
+<h3 id="路由-Router"><a href="#路由-Router" class="headerlink" title="路由 Router"></a>路由 Router</h3><p>默认脚手架生成的src目录中有router目录，里面有index.js</p>
+<p>我们只需在这个js文件中引用组件，配置路由即可。</p>
+<p>下面示例一个组件的路由配置</p>
+<p>引入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import FavoriteCom from &apos;@/components/Favorite/Index&apos;</span><br></pre></td></tr></table></figure></p>
+<p>在router的routes数组中添加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">const router = new Router(&#123;</span><br><span class="line">  //匹配的路由规则</span><br><span class="line">  routes: [</span><br><span class="line">    &#123;</span><br><span class="line">      path: &apos;/favorite&apos;,</span><br><span class="line">      name: &apos;favorite&apos;,</span><br><span class="line">      component: FavoriteCom</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>在main.js中引用router<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import router from &apos;./router&apos;</span><br></pre></td></tr></table></figure></p>
+<p>这样我们就可以在其他组件中通过this.$router.push来操作路由了。</p>
 
           
         
@@ -1212,7 +1220,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/23/Windows-Server-2016-安装IIS报错/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/31/WebAPI统一异常设置/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -1231,7 +1239,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/10/23/Windows-Server-2016-安装IIS报错/" itemprop="url">Windows Server 2016 安装IIS报错</a></h1>
+                <a class="post-title-link" href="/2020/03/31/WebAPI统一异常设置/" itemprop="url">WebAPI统一异常设置</a></h1>
         
 
         <div class="post-meta">
@@ -1243,8 +1251,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-23T20:53:39+08:00">
-                2019-10-23
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-31T13:44:25+08:00">
+                2020-03-31
               </time>
             
 
@@ -1290,9 +1298,9 @@
       
         
           
-            <p>在Windows Server 2016安装IIS的时候，报错，错误的主要信息是找不到源文件(The source file could not be found)，经过排查，主要是安装.Net Framework 3.5缺少源。</p>
-<p>解决方案：</p>
-<p>加载安装镜像，安装时手动指定源<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">D:\Sources\sxs</span><br></pre></td></tr></table></figure></p>
+            <p>很简单，两步操作。目前写的比较随意，日后完善。</p>
+<h6 id="继承Expection过滤器"><a href="#继承Expection过滤器" class="headerlink" title="继承Expection过滤器"></a>继承Expection过滤器</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">using System.Net;</span><br><span class="line">using System.Net.Http;</span><br><span class="line">using System.Web.Http.Filters;</span><br><span class="line"></span><br><span class="line">namespace IEM.WebAPI_Build.Web.Filters</span><br><span class="line">&#123;</span><br><span class="line">    public class IEMWebAPIExceptionAttribute : ExceptionFilterAttribute</span><br><span class="line">    &#123;</span><br><span class="line">        public override void OnException(HttpActionExecutedContext context)</span><br><span class="line">        &#123;</span><br><span class="line">            context.Response = context.Request.CreateResponse(</span><br><span class="line">                HttpStatusCode.InternalServerError,</span><br><span class="line">                new </span><br><span class="line">                &#123;</span><br><span class="line">                    StatusCode = HttpStatusCode.InternalServerError,</span><br><span class="line">                    Message = context.Exception.Message</span><br><span class="line">                &#125;);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="全局生效过滤器"><a href="#全局生效过滤器" class="headerlink" title="全局生效过滤器"></a>全局生效过滤器</h6><p>WebAPIConfig<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">config.Filters.Add(new Filters.IEMWebAPIExceptionAttribute());</span><br></pre></td></tr></table></figure></p>
 
           
         
@@ -1341,7 +1349,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/18/远程连接Mysql报错/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/31/WebAPI权限认证实现/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -1360,7 +1368,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/10/18/远程连接Mysql报错/" itemprop="url">远程连接Mysql报错</a></h1>
+                <a class="post-title-link" href="/2020/03/31/WebAPI权限认证实现/" itemprop="url">WebAPI权限认证实现</a></h1>
         
 
         <div class="post-meta">
@@ -1372,8 +1380,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-18T11:31:16+08:00">
-                2019-10-18
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-31T11:45:39+08:00">
+                2020-03-31
               </time>
             
 
@@ -1419,22 +1427,19 @@
       
         
           
-            <p>Mysql安装成功后，远程访问Mysql，提示错误。</p>
-<p>使用navicat连接，提示XXX is not allowed to connect this MySQL</p>
-<p>查询后，问题在于Mysql库中相应的User没有权限。</p>
-<p>解决方案</p>
-<p>1.CMD命令通过Mysql客户端连接登陆root<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br></pre></td></tr></table></figure></p>
-<p>然后输入密码；</p>
-<p>2.使用Mysql库<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">user mysql;</span><br></pre></td></tr></table></figure></p>
-<p>3.查询用户权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select user,host from user;</span><br></pre></td></tr></table></figure></p>
-<p><img src="\images\pasted-sam-102.png" alt="upload successful"></p>
-<p>4.添加用户权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grant all privileges on *.* to 用户名@&apos;IP地址或机器名&apos; identified by &apos;密码&apos;;</span><br></pre></td></tr></table></figure></p>
-<p>需要注意的是这里的IP地址指的是想要访问Mysql服务器的客户端的IP或机器名，并不是服务器的IP。</p>
-<p>如果想让所有机器都可以通过这个用户名访问Mysql，这里的IP设置为 %  </p>
-<p>建议开发的时候，设置为 %   这样所有机器都可以访问</p>
-<p>5.重建权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flush privileges;</span><br></pre></td></tr></table></figure></p>
-<p>6.再次查询用户权限，确认是否成功<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select user,host from user;</span><br></pre></td></tr></table></figure></p>
-<p><img src="\images\pasted-sam-103.png" alt="upload successful"><br>我们可以看到，已对CRTsoft-yanyong这台机器添加相应权限，再通过此电脑访问，已经可以访问成功。</p>
+            <p>在WebAPI中，需要对用户权限进行认证。目前IEM系统中主要采用两种方案。</p>
+<h4 id="Token"><a href="#Token" class="headerlink" title="Token"></a>Token</h4><p>Token是我在设计Explore登录的时候，临时采用的一种方案，Explore需要登录跳转，就需要验证身份，一般做法是对客户端身份校验无误后（根据登录状态或者用户名密码传参），在数据库（一般是缓存数据库，例如Redis；由于IEM没有使用Redis，而且访问量也很小，所以我们写在Sql库里）里写一串随机的串，这里采用GUID串，然后设置过期时间和登录时间。</p>
+<p>客户获取这个串后，在Explore登录时，将此串传递即可。IEM后台会检测串的真实性，有效性，然后获得成功的登录状态。</p>
+<p>这个方案当时我们使用Token这个名字。</p>
+<h4 id="Tickets"><a href="#Tickets" class="headerlink" title="Tickets"></a>Tickets</h4><p>Tickets是在设计WebAPI的时候，对于登录状态是需要客户通过用户名密码传递获取的，我们选择不记录在服务器里，而是将用户名和密码进行加密，作为basic认证头，然后客户获取到加密串后，在ajax或axios等异步请求中，在header中将此串加入，每次请求时，客户端进行解析验证。</p>
+<p>具体在WebAPI中的方案以下用代码简要说明。</p>
+<h6 id="权限认证过滤器"><a href="#权限认证过滤器" class="headerlink" title="权限认证过滤器"></a>权限认证过滤器</h6><p>新建权限认证过滤器，继承自AuthorizeAttribute，并重写OnAuthorization方法，在方法里进行基本验证的解析和用户名密码校验，以及过期时间检验，来确认权限。<br>需要注意的是，此处对含有AllowAnonymousAttribute的方法进行放行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">public class IEMTicketAuthorizeAttribute : AuthorizeAttribute</span><br><span class="line">&#123;</span><br><span class="line">    public override void OnAuthorization(System.Web.Http.Controllers.HttpActionContext actionContext)</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">        var authorization = actionContext.Request.Headers.Authorization;</span><br><span class="line">        string errorMessage = &quot;No ticket&quot;;</span><br><span class="line"></span><br><span class="line">        if (actionContext.ActionDescriptor.GetCustomAttributes&lt;AllowAnonymousAttribute&gt;(true).Count != 0</span><br><span class="line">            || actionContext.ActionDescriptor.ControllerDescriptor.GetCustomAttributes&lt;AllowAnonymousAttribute&gt;(true).Count != 0)</span><br><span class="line">        &#123;</span><br><span class="line">            base.OnAuthorization(actionContext);//正确的访问方法</span><br><span class="line">        &#125;</span><br><span class="line">        else if (authorization != null &amp;&amp; authorization.Parameter != null &amp;&amp; ValidateTicket(actionContext.Request, out errorMessage) != null)</span><br><span class="line">        &#123;</span><br><span class="line"></span><br><span class="line">            base.IsAuthorized(actionContext);//正确的访问方法</span><br><span class="line">        &#125;</span><br><span class="line">        else</span><br><span class="line">        &#123;</span><br><span class="line">            actionContext.Response = actionContext.Request.CreateResponse(</span><br><span class="line">                         HttpStatusCode.Unauthorized,</span><br><span class="line">                         new</span><br><span class="line">                         &#123;</span><br><span class="line">                             StatusCode = HttpStatusCode.Unauthorized,</span><br><span class="line">                             Message = $&quot;Unauthorized(&#123;errorMessage&#125;)&quot;</span><br><span class="line">                         &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    public static ViewModel.LoginUser ValidateTicket(HttpRequestMessage request, out string errorMessage)</span><br><span class="line">    &#123;</span><br><span class="line">        string encryptTicket = request.Headers.Authorization.Parameter;</span><br><span class="line">        errorMessage = string.Empty;</span><br><span class="line">        if (string.IsNullOrEmpty(encryptTicket))</span><br><span class="line">        &#123;</span><br><span class="line">            errorMessage = &quot;The ticket is null&quot;;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">        var decryptTicket = FormsAuthentication.Decrypt(encryptTicket);</span><br><span class="line">        //过期时间</span><br><span class="line">        var expiration = decryptTicket.Expiration;</span><br><span class="line">        if (expiration &lt; DateTime.Now)</span><br><span class="line">        &#123;</span><br><span class="line">            errorMessage = &quot;The ticket expired&quot;;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">        //用户名和密码</span><br><span class="line">        var strUserName = decryptTicket.Name;</span><br><span class="line">        var strTicket = decryptTicket.UserData;</span><br><span class="line">        var user = Business.DBAppend.User.UserValid(strUserName, strTicket);</span><br><span class="line">        if (user == null)</span><br><span class="line">        &#123;</span><br><span class="line">            errorMessage = $&quot;The user &#123;decryptTicket.Name&#125; has no permission&quot;;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">        user.IpAddress = ((System.Web.HttpContextWrapper)request?.Properties[&quot;MS_HttpContext&quot;])?.Request?.UserHostAddress;</span><br><span class="line">        return user;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h6 id="全局生效过滤器"><a href="#全局生效过滤器" class="headerlink" title="全局生效过滤器"></a>全局生效过滤器</h6><p>在WebAPIConfig中，全局生效过滤器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">config.Filters.Add(new Filters.IEMTicketAuthorizeAttribute());</span><br></pre></td></tr></table></figure>
+<h6 id="前端请求加Header"><a href="#前端请求加Header" class="headerlink" title="前端请求加Header"></a>前端请求加Header</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$.ajax(&#123;</span><br><span class="line">    type: $(&quot;#type&quot;).val(),</span><br><span class="line">    url: $(&quot;#tbUrl&quot;).val(),</span><br><span class="line">    data: dataStr,</span><br><span class="line">    contentType: &quot;application/json;charset=UTF-8&quot;,</span><br><span class="line">    traditional: true,</span><br><span class="line">    beforeSend: function (XHR) &#123; //xhr XML Http Request</span><br><span class="line">        //发送ajax请求之前向http的head里面加入验证信息</span><br><span class="line">        var ticket = $(&quot;#tbTicket&quot;).val();</span><br><span class="line">        if (ticket != &apos;&apos;)</span><br><span class="line">            XHR.setRequestHeader(&apos;Authorization&apos;, &apos;BasicAuth &apos; + ticket);</span><br><span class="line">    &#125;,</span><br><span class="line">    success: function (data1) &#123;</span><br><span class="line"></span><br><span class="line">    &#125;,</span><br><span class="line">    error: function (err) &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>前段请求时加Header，这里贴出测试ajax的代码，axios道理一样。 </p>
+<p>每次请求都需要加时，自行通过拦截器来实现。</p>
 
           
         
@@ -1483,7 +1488,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/17/Agile-BPM调研-项目试用/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/16/mac系统下npm全局安装权限问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sam">
@@ -1502,7 +1507,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/10/17/Agile-BPM调研-项目试用/" itemprop="url">Agile-BPM调研-项目试用</a></h1>
+                <a class="post-title-link" href="/2020/03/16/mac系统下npm全局安装权限问题/" itemprop="url">mac系统下npm全局安装权限问题</a></h1>
         
 
         <div class="post-meta">
@@ -1514,8 +1519,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T21:09:04+08:00">
-                2019-10-17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-16T18:27:31+08:00">
+                2020-03-16
               </time>
             
 
@@ -1561,36 +1566,7 @@
       
         
           
-            <h4 id="用户组织"><a href="#用户组织" class="headerlink" title="用户组织"></a>用户组织</h4><p>使用管理员账户登陆Agile-BPM，点击用户组织标签，可以看到有三个菜单，分别为用户管理、组织管理、角色管理。</p>
-<p><img src="\images\pasted-sam-92.png" alt="upload successful"></p>
-<p>其中用户管理作用为管理用户，对用户基本的增删改查。</p>
-<p>组织管理的作用为管理组织，组织是树结构，组织中可加入和移除用户。Agile-BPM中的用户可以隶属于多个组织。</p>
-<p>角色管理可添加不同角色，可对角色分配用户。其中菜单的资源权限就是在角色中分配的。</p>
-<p>我们本次试用添加用户组织角色的目的是为了在流程中使用。</p>
-<h4 id="流程和表单"><a href="#流程和表单" class="headerlink" title="流程和表单"></a>流程和表单</h4><p>建立一个流程的步骤主要分为以下几步，官网称之为流程实施三部曲</p>
-<p>建立实体并通过实体建立对象</p>
-<p>通过对象建立表单</p>
-<p>建立流程，并对流程全局或分布设置已建立的表单</p>
-<h5 id="表单管理"><a href="#表单管理" class="headerlink" title="表单管理"></a>表单管理</h5><h6 id="业务实体"><a href="#业务实体" class="headerlink" title="业务实体"></a>业务实体</h6><p>业务实体就是数据库中的表，我们可以建立多个表，然后在业务对象将这些实体表关联起来，组成一个大的结构。这个结构就是我们流程中的主体对象。<br>具体在表单管理–业务实体菜单中，可以建立表，以及表里相应的字段，字段可设置字段类型和在Form中呈现方式。</p>
-<p>此处我们任意建立一个数据库，流程的目的在于用户上传一个文件，然后管理员查看文件并进行批注，上传批注后的文件，然后返回第一个用户，用户接收后，流程结束。</p>
-<p><img src="\images\pasted-sam-94.png" alt="upload successful"></p>
-<h6 id="业务对象"><a href="#业务对象" class="headerlink" title="业务对象"></a>业务对象</h6><p>业务对象是用来建立对象，将对个实体表结合起来，组成一个对象，其中包含了实体表的关系。</p>
-<p>其中一对一，将会在实体下面紧跟子实体，是一对有的关系。</p>
-<p>一对多，将会在一个实体下面，跟一个子实体的列表，子实体可以增加删除，子实体为数组格式。</p>
-<p>我们本次实例只有一个实体，所以建立业务对象，选择此实体即可。</p>
-<h6 id="业务表单"><a href="#业务表单" class="headerlink" title="业务表单"></a>业务表单</h6><p>业务表单，即将建立好的业务对象，做成表单，表单的排列有多种格式。单列，双列，三列等。</p>
-<p>表单可以分配权限，可设置每个表单对于每个角色（组织或用户），是否必填、只读还是可编辑，我们在流程中通常每个步骤对于表单的控制是不同的，例如第一步必填某文本框，第二步可以不填；第一步可以编辑某文本框，第二步却只能查看；等等。</p>
-<p>还有一种情况是流程的每一步对于表单显示可能不同，可能第一步有两个文本框，第二步有完整的所有文本框，等等；</p>
-<p>所以我们可以在一个流程中，添加多个表单，并分配不同的权限，在流程的每一步分别引用不同的表单。</p>
-<p>此处我添加了3个表单，分别分配了可编辑权限。</p>
-<p><img src="\images\pasted-sam-95.png" alt="upload successful"><br>上图为表单列表</p>
-<p><img src="\images\pasted-sam-96.png" alt="upload successful"><br>上图为表单排列</p>
-<p><img src="\images\pasted-sam-97.png" alt="upload successful"><br>上图为表单权限分配</p>
-<h5 id="流程管理"><a href="#流程管理" class="headerlink" title="流程管理"></a>流程管理</h5><p>在流程管理–流程列表页面，新增一个流程</p>
-<p>首先在右侧选择业务对象，然后选择全局表单，然后在流程图主视图画相应的流程图，再对每一步进行用户选择，相关事件创建，这样一个流程图就完成了。</p>
-<p>下面我们用图形的方式，来分别呈现全局设置，和针对每个流程节点的设置。</p>
-<h6 id="全局配置"><a href="#全局配置" class="headerlink" title="全局配置"></a>全局配置</h6><p><img src="\images\pasted-sam-98.png" alt="upload successful"></p>
-<h6 id="单步配置"><a href="#单步配置" class="headerlink" title="单步配置"></a>单步配置</h6><p><img src="\images\pasted-sam-99.png" alt="upload successful"></p>
+            <p>在mac系统下，使用npm -g  安装任何全局都会报权限错误，下面是解决问题方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chown -R $(whoami) $(npm config get prefix)/&#123;lib/node_modules,bin,share&#125;</span><br></pre></td></tr></table></figure></p>
 
           
         
@@ -1630,7 +1606,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1676,7 +1652,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">67</span>
+                  <span class="site-state-item-count">87</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1726,7 +1702,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
